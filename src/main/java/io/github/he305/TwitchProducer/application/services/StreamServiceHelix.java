@@ -42,9 +42,7 @@ public class StreamServiceHelix implements StreamService {
     }
 
     private Stream buildEmptyStream() {
-        return Stream.builder()
-                .isLive(false)
-                .build();
+        return Stream.emptyStream();
     }
 
 }
