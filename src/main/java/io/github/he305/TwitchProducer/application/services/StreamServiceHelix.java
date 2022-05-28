@@ -1,4 +1,4 @@
-package io.github.he305.TwitchProducer.application;
+package io.github.he305.TwitchProducer.application.services;
 
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.domain.StreamList;

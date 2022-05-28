@@ -1,8 +1,9 @@
-package io.github.he305.TwitchProducer.application;
+package io.github.he305.TwitchProducer.application.services;
 
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.domain.StreamList;
 import com.netflix.hystrix.HystrixCommand;
+import io.github.he305.TwitchProducer.application.services.StreamServiceHelix;
 import io.github.he305.TwitchProducer.common.entities.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
