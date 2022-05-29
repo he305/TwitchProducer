@@ -8,6 +8,9 @@ addons:
     token:
       secure: $SONAR_TOKEN
 
+before_install:
+  - chmod +x mvnw
+
 script:
   - ./mvnw clean install -B
   - sonar-scanner
