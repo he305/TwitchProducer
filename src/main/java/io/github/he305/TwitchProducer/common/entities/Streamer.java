@@ -11,7 +11,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "streamer")
-public class Streamer{
+public class Streamer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

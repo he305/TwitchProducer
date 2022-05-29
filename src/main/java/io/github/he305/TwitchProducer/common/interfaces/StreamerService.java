@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface StreamerService {
     List<Streamer> getAllStreamers();
+
     Optional<Streamer> getStreamerByName(@NonNull String nickname);
+
     Streamer addStreamer(@NonNull Streamer streamer);
 }
