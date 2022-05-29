@@ -14,6 +14,8 @@
     <name>TwitchProducer</name>
     <description>Demo project for Spring Boot</description>
     <properties>
+        <sonar.projectKey>he305_TwitchProducer</sonar.projectKey>
+        <sonar.organization>he305</sonar.organization>
         <java.version>11</java.version>
     </properties>
     <dependencies>
