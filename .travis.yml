@@ -13,4 +13,3 @@ before_install:
 
 script:
   - ./mvnw clean install -B
-  - sonar-scanner
