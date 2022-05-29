@@ -69,13 +69,7 @@ class StreamServiceHelixTest {
         ).execute().getStreams()).thenReturn(List.of());
 //        Mockito.when(hystrixCommand.execute().getStreams()).thenReturn(List.of());
 
-        Stream expected = new Stream(
-                false,
-                null,
-                null,
-                null,
-                null
-        );
+        Stream expected = Stream.emptyStream();
 
         Stream actual = underTest.getStream(nickname);
         assertEquals(expected, actual);
