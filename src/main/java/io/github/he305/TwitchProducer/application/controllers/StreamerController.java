@@ -6,12 +6,14 @@ import io.github.he305.TwitchProducer.common.interfaces.StreamerService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/streamer")
+@RequestMapping("/api/v1/streamer")
 @AllArgsConstructor
 public class StreamerController {
     @Autowired
@@ -30,14 +32,18 @@ public class StreamerController {
     }
 
     @PostMapping("/add")
-    public Streamer addStreamer(@RequestBody StreamerBodyDto streamerBodyDto) {
+    public ResponseEntity<Streamer> addStreamer(@RequestBody StreamerBodyDto streamerBodyDto) {
         Streamer streamer = convertFromDto(streamerBodyDto);
-        return streamerService.addStreamer(streamer);
+        Streamer response = streamerService.addStreamer(streamer);
+        if (response.getId() != null) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
     private Streamer convertFromDto(StreamerBodyDto streamerBodyDto) {
         Streamer streamer = modelMapper.map(streamerBodyDto, Streamer.class);
-        streamer.setId(null);
         return streamer;
     }
 }

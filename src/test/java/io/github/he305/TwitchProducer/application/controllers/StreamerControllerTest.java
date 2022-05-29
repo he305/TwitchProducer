@@ -10,12 +10,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class StreamerControllerTest {
@@ -60,14 +62,28 @@ class StreamerControllerTest {
     }
 
     @Test
-    void addStreamer() {
+    void addStreamer_validInput() {
         String nickname = "test";
         StreamerBodyDto streamerBodyDto = new StreamerBodyDto(nickname);
         Streamer expected = new Streamer(0l, nickname);
         Mockito.when(modelMapper.map(streamerBodyDto, Streamer.class)).thenReturn(expected);
         Mockito.when(streamerService.addStreamer(expected)).thenReturn(expected);
 
-        Streamer actual = underTest.addStreamer(streamerBodyDto);
+        ResponseEntity<Streamer> actual = underTest.addStreamer(streamerBodyDto);
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    void addStreamer_serviceError() {
+        String nickname = "test";
+        StreamerBodyDto streamerBodyDto = new StreamerBodyDto(nickname);
+        Streamer fromDto = new Streamer(0l, nickname);
+        ResponseEntity<Streamer> expected = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        Mockito.when(modelMapper.map(streamerBodyDto, Streamer.class)).thenReturn(fromDto);
+        Mockito.when(streamerService.addStreamer(fromDto)).thenReturn(new Streamer());
+
+        ResponseEntity<Streamer> actual = underTest.addStreamer(streamerBodyDto);
         assertEquals(expected, actual);
     }
 }
