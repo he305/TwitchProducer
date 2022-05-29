@@ -1,0 +1,13 @@
+sudo: required
+language: java
+jdk: oraclejdk8
+
+addons:
+  sonarcloud:
+    organization: "he305"
+    token:
+      secure: $SONAR_TOKEN
+
+script:
+  - ./mvnw clean install -B
+  - sonar-scanner
