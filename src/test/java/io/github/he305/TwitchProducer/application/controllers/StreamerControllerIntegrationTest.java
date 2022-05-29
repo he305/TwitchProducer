@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -68,7 +69,7 @@ class StreamerControllerIntegrationTest {
                 "test3"
         );
 
-        List<StreamerBodyDto> requests = nicknames.stream().map(StreamerBodyDto::new).toList();
+        List<StreamerBodyDto> requests = nicknames.stream().map(StreamerBodyDto::new).collect(Collectors.toList());
         requests.forEach(streamerController::addStreamer);
         return nicknames;
     }
@@ -81,7 +82,7 @@ class StreamerControllerIntegrationTest {
         List<Streamer> expectedStreamers = nicknames.stream().map(nickname -> {
             counter.incrementAndGet();
             return new Streamer(counter.longValue(), nickname);
-        }).toList();
+        }).collect(Collectors.toList());
         ObjectMapper mapper = new ObjectMapper();
         String expected = mapper.writeValueAsString(expectedStreamers);
 
@@ -99,7 +100,7 @@ class StreamerControllerIntegrationTest {
         List<Streamer> expectedStreamers = nicknames.stream().map(nickname -> {
             counter.incrementAndGet();
             return new Streamer(counter.longValue(), nickname);
-        }).toList();
+        }).collect(Collectors.toList());
         ObjectMapper mapper = new ObjectMapper();
         String expected = mapper.writeValueAsString(expectedStreamers.get(0));
 
