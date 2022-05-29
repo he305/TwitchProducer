@@ -13,5 +13,5 @@ before_install:
 
 script:
   - ./mvnw clean install -B
-  - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=he305_TwitchProducer
+  - mvn sonar:sonar
 
