@@ -1,12 +1,6 @@
 spring:
   config:
     import: optional:file:.env[.properties]
-  datasource:
-    initialization-mode: always
-    platform: postgres
-    url: jdbc:postgresql://192.168.0.200:5432/twitch_db
-    username: postgres
-    password: ${db_password}
 
 jpa:
   properties:
