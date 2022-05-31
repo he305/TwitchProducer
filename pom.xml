@@ -8,7 +8,7 @@
         <version>2.7.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>io.github.he305</groupId>
+    <groupId>com.github.he305</groupId>
     <artifactId>TwitchProducer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>TwitchProducer</name>

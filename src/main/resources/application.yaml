@@ -4,6 +4,6 @@ spring:
 
 jpa:
   properties:
-      jdbc:
-        lob:
-          non_contextual_creation: true
+    jdbc:
+      lob:
+        non_contextual_creation: true
