@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TwitchClientConfiguration {
 
-    @Value("${twitch-client-id}")
+    @Value("${twitch-client-id-env}")
     private String clientId;
 
-    @Value("${twitch-client-secret}")
+    @Value("${twitch-client-secret-env}")
     private String clientSecret;
 
     @Bean

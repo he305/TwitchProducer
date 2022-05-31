@@ -7,6 +7,3 @@ jpa:
       jdbc:
         lob:
           non_contextual_creation: true
-
-twitch-client-id: ${twitch-client-id-env}
-twitch-client-secret: ${twitch-client-secret-env}
