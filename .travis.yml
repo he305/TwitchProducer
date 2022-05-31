@@ -2,6 +2,9 @@ sudo: required
 language: java
 jdk: oraclejdk11
 
+services:
+  - docker
+
 addons:
   sonarcloud:
     organization: "he305"
