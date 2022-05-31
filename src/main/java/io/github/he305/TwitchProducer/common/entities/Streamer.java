@@ -15,6 +15,6 @@ public class Streamer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(name = "nickname", unique = true)
+    @Column(name = "nickname", unique = true, nullable = false)
     private String nickname;
 }
