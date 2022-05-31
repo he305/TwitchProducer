@@ -7,9 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,7 +32,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
+@ContextConfiguration(initializers = {StreamerControllerIntegrationTest.Initializer.class})
 class StreamerControllerIntegrationTest {
+
+    private static final PostgreSQLContainer sqlContainer;
+
+    static {
+        sqlContainer = new PostgreSQLContainer("postgres:10.7")
+                .withDatabaseName("integration-tests-db")
+                .withUsername("sa")
+                .withPassword("sa");
+        sqlContainer.start();
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -38,6 +57,7 @@ class StreamerControllerIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void addStreamer() throws Exception {
         StreamerBodyDto bodyDto = new StreamerBodyDto("test");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -55,6 +75,7 @@ class StreamerControllerIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void getAll_empty() throws Exception {
         mockMvc.perform(get("/api/v1/streamer/all"))
                 .andDo(print())
@@ -75,6 +96,7 @@ class StreamerControllerIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void getAll_withResult() throws Exception {
         List<String> nicknames = injectSomeData();
 
@@ -93,6 +115,7 @@ class StreamerControllerIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void getByName_existingEntry() throws Exception {
         List<String> nicknames = injectSomeData();
 
@@ -120,5 +143,15 @@ class StreamerControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().string(expected));
+    }
+
+    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues.of(
+                    "spring.datasource.url=" + sqlContainer.getJdbcUrl(),
+                    "spring.datasource.username=" + sqlContainer.getUsername(),
+                    "spring.datasource.password=" + sqlContainer.getPassword()
+            ).applyTo(configurableApplicationContext.getEnvironment());
+        }
     }
 }
