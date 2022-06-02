@@ -1,6 +1,7 @@
 package com.github.he305.twitchproducer.application.controllers;
 
 import com.github.he305.twitchproducer.application.dto.StreamerBodyDto;
+import com.github.he305.twitchproducer.application.dto.StreamerListDto;
 import com.github.he305.twitchproducer.common.entities.Streamer;
 import com.github.he305.twitchproducer.common.interfaces.StreamerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,8 +39,8 @@ class StreamerControllerTest {
         List<Streamer> expected = Collections.emptyList();
         Mockito.when(streamerService.getAllStreamers()).thenReturn(expected);
 
-        List<Streamer> actual = underTest.getAll();
-        assertEquals(expected, actual);
+        StreamerListDto actual = underTest.getAll();
+        assertEquals(expected, actual.getStreamers());
     }
 
     @Test
