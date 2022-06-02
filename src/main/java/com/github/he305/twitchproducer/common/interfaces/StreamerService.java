@@ -1,6 +1,6 @@
-package com.github.he305.TwitchProducer.common.interfaces;
+package com.github.he305.twitchproducer.common.interfaces;
 
-import com.github.he305.TwitchProducer.common.entities.Streamer;
+import com.github.he305.twitchproducer.common.entities.Streamer;
 import lombok.NonNull;
 
 import java.util.List;

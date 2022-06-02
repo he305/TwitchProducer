@@ -1,4 +1,4 @@
-package com.github.he305.TwitchProducer;
+package com.github.he305.twitchproducer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

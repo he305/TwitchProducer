@@ -1,4 +1,4 @@
-package com.github.he305.TwitchProducer;
+package com.github.he305.twitchproducer;
 
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.helix.TwitchHelix;

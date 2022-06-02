@@ -1,4 +1,4 @@
-package com.github.he305.TwitchProducer.application.dto;
+package com.github.he305.twitchproducer.application.dto;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

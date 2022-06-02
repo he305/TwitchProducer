@@ -1,6 +1,6 @@
-package com.github.he305.TwitchProducer.application.services;
+package com.github.he305.twitchproducer.application.services;
 
-import com.github.he305.TwitchProducer.common.entities.Stream;
+import com.github.he305.twitchproducer.common.entities.Stream;
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.domain.StreamList;
 import com.netflix.hystrix.HystrixCommand;

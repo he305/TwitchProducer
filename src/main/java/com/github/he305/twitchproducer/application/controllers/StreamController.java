@@ -1,7 +1,7 @@
-package com.github.he305.TwitchProducer.application.controllers;
+package com.github.he305.twitchproducer.application.controllers;
 
-import com.github.he305.TwitchProducer.common.entities.Stream;
-import com.github.he305.TwitchProducer.common.interfaces.StreamService;
+import com.github.he305.twitchproducer.common.entities.Stream;
+import com.github.he305.twitchproducer.common.interfaces.StreamService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

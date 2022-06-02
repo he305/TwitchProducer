@@ -1,6 +1,6 @@
-package com.github.he305.TwitchProducer.application.repositories;
+package com.github.he305.twitchproducer.application.repositories;
 
-import com.github.he305.TwitchProducer.common.entities.Streamer;
+import com.github.he305.twitchproducer.common.entities.Streamer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

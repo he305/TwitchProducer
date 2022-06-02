@@ -1,8 +1,8 @@
-package com.github.he305.TwitchProducer.application.services;
+package com.github.he305.twitchproducer.application.services;
 
-import com.github.he305.TwitchProducer.application.repositories.StreamerRepository;
-import com.github.he305.TwitchProducer.common.entities.Streamer;
-import com.github.he305.TwitchProducer.common.interfaces.StreamerService;
+import com.github.he305.twitchproducer.application.repositories.StreamerRepository;
+import com.github.he305.twitchproducer.common.entities.Streamer;
+import com.github.he305.twitchproducer.common.interfaces.StreamerService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;

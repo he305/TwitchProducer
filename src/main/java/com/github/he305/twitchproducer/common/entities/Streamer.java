@@ -1,4 +1,4 @@
-package com.github.he305.TwitchProducer.common.entities;
+package com.github.he305.twitchproducer.common.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

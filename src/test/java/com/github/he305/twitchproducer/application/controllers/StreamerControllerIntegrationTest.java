@@ -1,8 +1,8 @@
-package com.github.he305.TwitchProducer.application.controllers;
+package com.github.he305.twitchproducer.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.he305.TwitchProducer.application.dto.StreamerBodyDto;
-import com.github.he305.TwitchProducer.common.entities.Streamer;
+import com.github.he305.twitchproducer.application.dto.StreamerBodyDto;
+import com.github.he305.twitchproducer.common.entities.Streamer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -52,13 +52,13 @@ class StreamerControllerIntegrationTest {
     private StreamerController streamerController;
 
     @Test
-    public void controllerIsNotNull() {
+    void controllerIsNotNull() {
         assertNotNull(streamerController);
     }
 
     @Test
     @Transactional
-    public void addStreamer() throws Exception {
+    void addStreamer() throws Exception {
         StreamerBodyDto bodyDto = new StreamerBodyDto("test");
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonObject = objectMapper.writeValueAsString(bodyDto);
@@ -76,7 +76,7 @@ class StreamerControllerIntegrationTest {
 
     @Test
     @Transactional
-    public void getAll_empty() throws Exception {
+    void getAll_empty() throws Exception {
         mockMvc.perform(get("/api/v1/streamer/all"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
@@ -97,7 +97,7 @@ class StreamerControllerIntegrationTest {
 
     @Test
     @Transactional
-    public void getAll_withResult() throws Exception {
+    void getAll_withResult() throws Exception {
         List<String> nicknames = injectSomeData();
 
         AtomicInteger counter = new AtomicInteger(0);
@@ -116,7 +116,7 @@ class StreamerControllerIntegrationTest {
 
     @Test
     @Transactional
-    public void getByName_existingEntry() throws Exception {
+    void getByName_existingEntry() throws Exception {
         List<String> nicknames = injectSomeData();
 
         AtomicInteger counter = new AtomicInteger(0);
@@ -134,7 +134,7 @@ class StreamerControllerIntegrationTest {
     }
 
     @Test
-    public void getByName_noResult() throws Exception {
+    void getByName_noResult() throws Exception {
         Streamer expectedStreamer = new Streamer();
         ObjectMapper mapper = new ObjectMapper();
         String expected = mapper.writeValueAsString(expectedStreamer);

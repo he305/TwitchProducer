@@ -1,8 +1,8 @@
-package com.github.he305.TwitchProducer.application.controllers;
+package com.github.he305.twitchproducer.application.controllers;
 
-import com.github.he305.TwitchProducer.application.dto.StreamerBodyDto;
-import com.github.he305.TwitchProducer.common.entities.Streamer;
-import com.github.he305.TwitchProducer.common.interfaces.StreamerService;
+import com.github.he305.twitchproducer.application.dto.StreamerBodyDto;
+import com.github.he305.twitchproducer.common.entities.Streamer;
+import com.github.he305.twitchproducer.common.interfaces.StreamerService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

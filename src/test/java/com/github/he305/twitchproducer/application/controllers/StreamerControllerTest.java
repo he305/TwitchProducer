@@ -1,8 +1,8 @@
-package com.github.he305.TwitchProducer.application.controllers;
+package com.github.he305.twitchproducer.application.controllers;
 
-import com.github.he305.TwitchProducer.application.dto.StreamerBodyDto;
-import com.github.he305.TwitchProducer.common.entities.Streamer;
-import com.github.he305.TwitchProducer.common.interfaces.StreamerService;
+import com.github.he305.twitchproducer.application.dto.StreamerBodyDto;
+import com.github.he305.twitchproducer.common.entities.Streamer;
+import com.github.he305.twitchproducer.common.interfaces.StreamerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,7 +1,7 @@
-package com.github.he305.TwitchProducer.application.services;
+package com.github.he305.twitchproducer.application.services;
 
-import com.github.he305.TwitchProducer.common.entities.Stream;
-import com.github.he305.TwitchProducer.common.interfaces.StreamService;
+import com.github.he305.twitchproducer.common.entities.Stream;
+import com.github.he305.twitchproducer.common.interfaces.StreamService;
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.domain.StreamList;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ public class StreamServiceHelix implements StreamService {
     }
 
     private Stream buildStream(StreamList streamList) {
-        if (streamList.getStreams().size() == 0)
+        if (streamList.getStreams().isEmpty())
             return buildEmptyStream();
 
         return buildFullStream(streamList.getStreams().get(0));

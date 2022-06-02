@@ -1,7 +1,7 @@
-package com.github.he305.TwitchProducer.application.services;
+package com.github.he305.twitchproducer.application.services;
 
-import com.github.he305.TwitchProducer.application.repositories.StreamerRepository;
-import com.github.he305.TwitchProducer.common.entities.Streamer;
+import com.github.he305.twitchproducer.application.repositories.StreamerRepository;
+import com.github.he305.twitchproducer.common.entities.Streamer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
