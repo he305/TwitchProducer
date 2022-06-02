@@ -1,5 +1,6 @@
 package com.github.he305.TwitchProducer.application.controllers;
 
+import com.github.he305.TwitchProducer.application.constants.ApiVersionPathConstants;
 import com.github.he305.TwitchProducer.application.dto.StreamerBodyDto;
 import com.github.he305.TwitchProducer.common.entities.Streamer;
 import com.github.he305.TwitchProducer.common.interfaces.StreamerService;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/streamer")
+@RequestMapping(ApiVersionPathConstants.V1 + "streamer")
 @AllArgsConstructor
 public class StreamerController {
     @Autowired
