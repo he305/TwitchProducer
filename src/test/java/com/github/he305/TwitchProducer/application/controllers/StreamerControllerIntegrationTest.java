@@ -1,7 +1,9 @@
 package com.github.he305.TwitchProducer.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.he305.TwitchProducer.application.constants.ApiVersionPathConstants;
 import com.github.he305.TwitchProducer.application.dto.StreamerBodyDto;
+import com.github.he305.TwitchProducer.application.dto.StreamerListDto;
 import com.github.he305.TwitchProducer.common.entities.Streamer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -66,7 +69,7 @@ class StreamerControllerIntegrationTest {
         Streamer expected = new Streamer(1L, "test");
         String expectedJson = objectMapper.writeValueAsString(expected);
 
-        mockMvc.perform(post("/api/v1/streamer/add")
+        mockMvc.perform(post(ApiVersionPathConstants.V1 + "streamer/add")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
                 .andDo(print())
@@ -77,10 +80,13 @@ class StreamerControllerIntegrationTest {
     @Test
     @Transactional
     public void getAll_empty() throws Exception {
-        mockMvc.perform(get("/api/v1/streamer/all"))
+        StreamerListDto streamerListDto = new StreamerListDto(Collections.emptyList());
+        ObjectMapper mapper = new ObjectMapper();
+        String expected = mapper.writeValueAsString(streamerListDto);
+        mockMvc.perform(get(ApiVersionPathConstants.V1 + "streamer"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(content().string("[]"));
+                .andExpect(content().string(expected));
     }
 
     private List<String> injectSomeData() {
@@ -105,10 +111,12 @@ class StreamerControllerIntegrationTest {
             counter.incrementAndGet();
             return new Streamer(counter.longValue(), nickname);
         }).collect(Collectors.toList());
-        ObjectMapper mapper = new ObjectMapper();
-        String expected = mapper.writeValueAsString(expectedStreamers);
 
-        mockMvc.perform(get("/api/v1/streamer/all"))
+        StreamerListDto streamerListDto = new StreamerListDto(expectedStreamers);
+        ObjectMapper mapper = new ObjectMapper();
+        String expected = mapper.writeValueAsString(streamerListDto);
+
+        mockMvc.perform(get(ApiVersionPathConstants.V1 + "streamer"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().string(expected));
@@ -127,7 +135,7 @@ class StreamerControllerIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         String expected = mapper.writeValueAsString(expectedStreamers.get(0));
 
-        mockMvc.perform(get(String.format("/api/v1/streamer/%s", nicknames.get(0))))
+        mockMvc.perform(get(String.format(ApiVersionPathConstants.V1 + "streamer/%s", nicknames.get(0))))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().string(expected));
@@ -139,7 +147,7 @@ class StreamerControllerIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         String expected = mapper.writeValueAsString(expectedStreamer);
 
-        mockMvc.perform(get("/api/v1/streamer/test"))
+        mockMvc.perform(get(ApiVersionPathConstants.V1 + "streamer/test"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().string(expected));
