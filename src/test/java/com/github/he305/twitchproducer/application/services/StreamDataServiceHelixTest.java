@@ -1,6 +1,6 @@
 package com.github.he305.twitchproducer.application.services;
 
-import com.github.he305.twitchproducer.common.entities.Stream;
+import com.github.he305.twitchproducer.common.entities.StreamData;
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.domain.StreamList;
 import com.netflix.hystrix.HystrixCommand;
@@ -19,18 +19,18 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class StreamServiceHelixTest {
+class StreamDataServiceHelixTest {
 
     @Mock
     private TwitchHelix twitchClient;
     @Mock
     private HystrixCommand<StreamList> hystrixCommand;
-    private StreamServiceHelix underTest;
+    private StreamDataServiceHelix underTest;
 
     @BeforeEach
     public void setUp() {
         twitchClient = Mockito.mock(TwitchHelix.class, Mockito.RETURNS_DEEP_STUBS);
-        underTest = new StreamServiceHelix(twitchClient);
+        underTest = new StreamDataServiceHelix(twitchClient);
     }
 
     public com.github.twitch4j.helix.domain.Stream getValidStream() {
@@ -68,9 +68,9 @@ class StreamServiceHelixTest {
         ).execute().getStreams()).thenReturn(List.of());
 //        Mockito.when(hystrixCommand.execute().getStreams()).thenReturn(List.of());
 
-        Stream expected = Stream.emptyStream();
+        StreamData expected = StreamData.emptyStream();
 
-        Stream actual = underTest.getStream(nickname);
+        StreamData actual = underTest.getStream(nickname);
         assertEquals(expected, actual);
     }
 
@@ -86,7 +86,7 @@ class StreamServiceHelixTest {
         ).execute().getStreams()).thenReturn(List.of(
                 validStream
         ));
-        Stream expected = new Stream(
+        StreamData expected = new StreamData(
                 true,
                 "gameName",
                 "title",
@@ -94,7 +94,7 @@ class StreamServiceHelixTest {
                 LocalDateTime.of(1970, 1, 1, 0, 0, 0, 0)
         );
 
-        Stream actual = underTest.getStream(nickname);
+        StreamData actual = underTest.getStream(nickname);
 
         assertEquals(expected, actual);
     }

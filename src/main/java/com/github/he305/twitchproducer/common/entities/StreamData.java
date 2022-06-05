@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -12,15 +15,16 @@ import java.time.ZoneOffset;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Stream {
+public class StreamData {
+
     private Boolean isLive;
     private String gameName;
     private String title;
     private Integer viewerCount;
     private LocalDateTime startedAt;
 
-    public static Stream emptyStream() {
-        return Stream.builder()
+    public static StreamData emptyStream() {
+        return StreamData.builder()
                 .isLive(false)
                 .gameName("")
                 .title("")

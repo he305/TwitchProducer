@@ -1,7 +1,7 @@
 package com.github.he305.twitchproducer.application.services;
 
-import com.github.he305.twitchproducer.common.entities.Stream;
-import com.github.he305.twitchproducer.common.interfaces.StreamService;
+import com.github.he305.twitchproducer.common.entities.StreamData;
+import com.github.he305.twitchproducer.common.interfaces.StreamDataService;
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.domain.StreamList;
 import lombok.AllArgsConstructor;
@@ -14,25 +14,25 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class StreamServiceHelix implements StreamService {
+public class StreamDataServiceHelix implements StreamDataService {
     @Autowired
     private final TwitchHelix twitchClient;
 
     @Override
-    public Stream getStream(String nickname) {
+    public StreamData getStream(String nickname) {
         StreamList streamList = twitchClient.getStreams(null, null, null, 100, null, null, null, List.of(nickname)).execute();
         return buildStream(streamList);
     }
 
-    private Stream buildStream(StreamList streamList) {
+    private StreamData buildStream(StreamList streamList) {
         if (streamList.getStreams().isEmpty())
             return buildEmptyStream();
 
         return buildFullStream(streamList.getStreams().get(0));
     }
 
-    private Stream buildFullStream(com.github.twitch4j.helix.domain.Stream rawStream) {
-        return Stream.builder()
+    private StreamData buildFullStream(com.github.twitch4j.helix.domain.Stream rawStream) {
+        return StreamData.builder()
                 .gameName(rawStream.getGameName())
                 .startedAt(LocalDateTime.ofInstant(rawStream.getStartedAtInstant(), ZoneOffset.UTC))
                 .title(rawStream.getTitle())
@@ -41,8 +41,8 @@ public class StreamServiceHelix implements StreamService {
                 .build();
     }
 
-    private Stream buildEmptyStream() {
-        return Stream.emptyStream();
+    private StreamData buildEmptyStream() {
+        return StreamData.emptyStream();
     }
 
 }

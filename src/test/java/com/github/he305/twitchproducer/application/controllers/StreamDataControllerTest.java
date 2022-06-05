@@ -1,7 +1,7 @@
 package com.github.he305.twitchproducer.application.controllers;
 
-import com.github.he305.twitchproducer.common.entities.Stream;
-import com.github.he305.twitchproducer.common.interfaces.StreamService;
+import com.github.he305.twitchproducer.common.entities.StreamData;
+import com.github.he305.twitchproducer.common.interfaces.StreamDataService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,24 +15,24 @@ import java.time.ZoneOffset;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class StreamControllerTest {
+class StreamDataControllerTest {
 
     @Mock
-    private StreamService streamService;
-    private StreamController underTest;
+    private StreamDataService streamDataService;
+    private StreamDataController underTest;
 
     @BeforeEach
     public void setUp() {
-        underTest = new StreamController(streamService);
+        underTest = new StreamDataController(streamDataService);
     }
 
     @Test
     void getStream_noStreamData() {
         String data = "";
-        Stream expected = Stream.emptyStream();
+        StreamData expected = StreamData.emptyStream();
 
-        Mockito.when(streamService.getStream(data)).thenReturn(Stream.emptyStream());
-        Stream actual = underTest.getStream("");
+        Mockito.when(streamDataService.getStream(data)).thenReturn(StreamData.emptyStream());
+        StreamData actual = underTest.getStream("");
 
         assertEquals(expected, actual);
     }
@@ -40,7 +40,7 @@ class StreamControllerTest {
     @Test
     void getStream_existStreamData() {
         String data = "";
-        Stream expected = Stream.builder()
+        StreamData expected = StreamData.builder()
                 .gameName("gameName")
                 .isLive(true)
                 .startedAt(LocalDateTime.ofEpochSecond(1, 1, ZoneOffset.UTC))
@@ -48,8 +48,8 @@ class StreamControllerTest {
                 .viewerCount(0)
                 .build();
 
-        Mockito.when(streamService.getStream(data)).thenReturn(expected);
-        Stream actual = underTest.getStream(data);
+        Mockito.when(streamDataService.getStream(data)).thenReturn(expected);
+        StreamData actual = underTest.getStream(data);
 
         assertEquals(expected, actual);
     }
