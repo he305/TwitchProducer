@@ -7,3 +7,5 @@ jpa:
     jdbc:
       lob:
         non_contextual_creation: true
+
+twitch-producer.scheduler.delay: 5000
