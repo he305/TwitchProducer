@@ -1,4 +1,5 @@
 CREATE TABLE streamer (
     id SERIAL PRIMARY KEY NOT NULL,
     nickname TEXT NOT NULL UNIQUE
+
 );
