@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
 import com.github.he305.twitchproducer.application.dto.StreamerBodyDto;
 import com.github.he305.twitchproducer.application.dto.StreamerListDto;
+import com.github.he305.twitchproducer.common.entities.Platform;
 import com.github.he305.twitchproducer.common.entities.Streamer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ class StreamerControllerIntegrationTest {
     @Test
     @Transactional
     void addStreamer() throws Exception {
-        StreamerBodyDto bodyDto = new StreamerBodyDto("test");
+        StreamerBodyDto bodyDto = new StreamerBodyDto("test", Platform.TWITCH);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonObject = objectMapper.writeValueAsString(bodyDto);
 
@@ -97,7 +98,9 @@ class StreamerControllerIntegrationTest {
                 "test3"
         );
 
-        List<StreamerBodyDto> requests = nicknames.stream().map(StreamerBodyDto::new).collect(Collectors.toList());
+        List<StreamerBodyDto> requests = nicknames.stream()
+                .map(nick -> new StreamerBodyDto(nick, Platform.TWITCH))
+                .collect(Collectors.toList());
         requests.forEach(streamerController::addStreamer);
         return nicknames;
     }
@@ -106,7 +109,7 @@ class StreamerControllerIntegrationTest {
     @Transactional
     void addStreamer_existed() throws Exception {
         List<String> nicknames = injectSomeData();
-        StreamerBodyDto bodyDto = new StreamerBodyDto(nicknames.get(0));
+        StreamerBodyDto bodyDto = new StreamerBodyDto(nicknames.get(0), Platform.TWITCH);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonObject = objectMapper.writeValueAsString(bodyDto);
         counter++;

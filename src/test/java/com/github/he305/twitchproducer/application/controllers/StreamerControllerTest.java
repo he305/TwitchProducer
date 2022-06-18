@@ -2,6 +2,7 @@ package com.github.he305.twitchproducer.application.controllers;
 
 import com.github.he305.twitchproducer.application.dto.StreamerBodyDto;
 import com.github.he305.twitchproducer.application.dto.StreamerListDto;
+import com.github.he305.twitchproducer.common.entities.Platform;
 import com.github.he305.twitchproducer.common.entities.Streamer;
 import com.github.he305.twitchproducer.common.interfaces.StreamerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +47,7 @@ class StreamerControllerTest {
     @Test
     void getByName_someData() {
         String data = "1";
-        Streamer expected = new Streamer(1L, "1");
+        Streamer expected = new Streamer(1L, "1", Platform.TWITCH);
         Mockito.when(streamerService.getStreamerByName(data)).thenReturn(Optional.of(expected));
         Streamer actual = underTest.getByName(data);
         assertEquals(expected, actual);
@@ -65,8 +66,8 @@ class StreamerControllerTest {
     @Test
     void addStreamer_validInput() {
         String nickname = "test";
-        StreamerBodyDto streamerBodyDto = new StreamerBodyDto(nickname);
-        Streamer expected = new Streamer(0L, nickname);
+        StreamerBodyDto streamerBodyDto = new StreamerBodyDto(nickname, Platform.TWITCH);
+        Streamer expected = new Streamer(0L, nickname, Platform.TWITCH);
         Mockito.when(modelMapper.map(streamerBodyDto, Streamer.class)).thenReturn(expected);
         Mockito.when(streamerService.addStreamer(expected)).thenReturn(expected);
 
@@ -78,8 +79,8 @@ class StreamerControllerTest {
     @Test
     void addStreamer_serviceError() {
         String nickname = "test";
-        StreamerBodyDto streamerBodyDto = new StreamerBodyDto(nickname);
-        Streamer fromDto = new Streamer(0L, nickname);
+        StreamerBodyDto streamerBodyDto = new StreamerBodyDto(nickname, Platform.TWITCH);
+        Streamer fromDto = new Streamer(0L, nickname, Platform.TWITCH);
         ResponseEntity<Streamer> expected = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         Mockito.when(modelMapper.map(streamerBodyDto, Streamer.class)).thenReturn(fromDto);
         Mockito.when(streamerService.addStreamer(fromDto)).thenReturn(new Streamer());

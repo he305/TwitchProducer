@@ -1,0 +1,3 @@
+DELETE FROM streamer;
+ALTER TABLE streamer
+ADD COLUMN platform VARCHAR(8) NOT NULL;

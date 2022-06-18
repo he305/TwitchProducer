@@ -1,6 +1,7 @@
 package com.github.he305.twitchproducer.application.services;
 
 import com.github.he305.twitchproducer.application.repositories.StreamerRepository;
+import com.github.he305.twitchproducer.common.entities.Platform;
 import com.github.he305.twitchproducer.common.entities.Streamer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class StreamerServiceImplTest {
     @Test
     void getStreamerByName_validName() {
         String data = "";
-        Streamer expected = new Streamer(1L, "1");
+        Streamer expected = new Streamer(1L, "1", Platform.TWITCH);
 
         Mockito.when(streamerRepository.findByNickname(data)).thenReturn(List.of(expected));
 
@@ -57,7 +58,7 @@ class StreamerServiceImplTest {
 
     @Test
     void addStreamer_emptyName() {
-        Streamer data = new Streamer(0L, "");
+        Streamer data = new Streamer(0L, "", Platform.TWITCH);
         Streamer expected = new Streamer();
         Streamer actual = underTest.addStreamer(data);
         assertEquals(expected, actual);
@@ -66,7 +67,7 @@ class StreamerServiceImplTest {
     @Test
     void addStreamer_alreadyExists() {
         String nickname = "1";
-        Streamer data = new Streamer(0L, nickname);
+        Streamer data = new Streamer(0L, nickname, Platform.TWITCH);
         Streamer expected = new Streamer();
         Mockito.when(streamerRepository.findByNickname(nickname)).thenReturn(List.of(data));
         Streamer actual = underTest.addStreamer(data);
@@ -75,7 +76,7 @@ class StreamerServiceImplTest {
 
     @Test
     void addStreamer_validFull() {
-        Streamer data = new Streamer(1L, "1");
+        Streamer data = new Streamer(1L, "1", Platform.TWITCH);
         Mockito.when(streamerRepository.save(data)).thenReturn(data);
 
         Streamer expected = underTest.addStreamer(data);
