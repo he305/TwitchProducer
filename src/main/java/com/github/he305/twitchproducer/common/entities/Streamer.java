@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Table(name = "streamer")
 public class Streamer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "nickname", unique = true, nullable = false)
     private String nickname;
