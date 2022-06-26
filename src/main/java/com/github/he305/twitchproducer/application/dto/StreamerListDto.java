@@ -1,6 +1,6 @@
 package com.github.he305.twitchproducer.application.dto;
 
-import com.github.he305.twitchproducer.common.entities.Streamer;
+import com.github.he305.twitchproducer.common.dto.StreamerResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,5 +13,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StreamerListDto {
-    List<Streamer> streamers;
+    List<StreamerResponseDto> streamers;
 }

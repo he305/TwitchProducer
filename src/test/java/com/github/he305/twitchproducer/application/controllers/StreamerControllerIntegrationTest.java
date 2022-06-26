@@ -2,11 +2,14 @@ package com.github.he305.twitchproducer.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
-import com.github.he305.twitchproducer.application.dto.StreamerBodyDto;
 import com.github.he305.twitchproducer.application.dto.StreamerListDto;
+import com.github.he305.twitchproducer.common.dto.PersonDto;
+import com.github.he305.twitchproducer.common.dto.StreamerAddDto;
+import com.github.he305.twitchproducer.common.dto.StreamerResponseDto;
 import com.github.he305.twitchproducer.common.entities.Platform;
-import com.github.he305.twitchproducer.common.entities.Streamer;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {StreamerControllerIntegrationTest.Initializer.class})
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StreamerControllerIntegrationTest {
 
     private static final PostgreSQLContainer sqlContainer;
@@ -48,8 +52,21 @@ class StreamerControllerIntegrationTest {
     private int counter = 0;
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private PersonController personController;
     @Autowired
     private StreamerController streamerController;
+
+    @BeforeAll
+    void setUp() {
+        injectPersonData();
+    }
+
+    void injectPersonData() {
+        PersonDto personDto = new PersonDto("testName", "testLastName");
+        personController.addPerson(personDto);
+    }
 
     @Test
     void controllerIsNotNull() {
@@ -59,7 +76,7 @@ class StreamerControllerIntegrationTest {
     @Test
     @Transactional
     void addStreamer() throws Exception {
-        StreamerBodyDto bodyDto = new StreamerBodyDto("test", Platform.TWITCH);
+        StreamerAddDto bodyDto = new StreamerAddDto("test", Platform.TWITCH, 1L);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonObject = objectMapper.writeValueAsString(bodyDto);
 
@@ -71,7 +88,7 @@ class StreamerControllerIntegrationTest {
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        Streamer actual = objectMapper.readValue(content, Streamer.class);
+        StreamerResponseDto actual = objectMapper.readValue(content, StreamerResponseDto.class);
         assertEquals(bodyDto.getNickname(), actual.getNickname());
     }
 
@@ -98,8 +115,8 @@ class StreamerControllerIntegrationTest {
                 "test3"
         );
 
-        List<StreamerBodyDto> requests = nicknames.stream()
-                .map(nick -> new StreamerBodyDto(nick, Platform.TWITCH))
+        List<StreamerAddDto> requests = nicknames.stream()
+                .map(nick -> new StreamerAddDto(nick, Platform.TWITCH, 1L))
                 .collect(Collectors.toList());
         requests.forEach(streamerController::addStreamer);
         return nicknames;
@@ -109,9 +126,9 @@ class StreamerControllerIntegrationTest {
     @Transactional
     void addStreamer_existed() throws Exception {
         List<String> nicknames = injectSomeData();
-        StreamerBodyDto bodyDto = new StreamerBodyDto(nicknames.get(0), Platform.TWITCH);
+        StreamerAddDto data = new StreamerAddDto(nicknames.get(0), Platform.TWITCH, 0L);
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonObject = objectMapper.writeValueAsString(bodyDto);
+        String jsonObject = objectMapper.writeValueAsString(data);
         counter++;
 
         mockMvc.perform(post(ApiVersionPathConstants.V1 + "streamer")
@@ -154,14 +171,14 @@ class StreamerControllerIntegrationTest {
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        Streamer actual = mapper.readValue(content, Streamer.class);
+        StreamerResponseDto actual = mapper.readValue(content, StreamerResponseDto.class);
         assertEquals(expected, actual.getNickname());
     }
 
     @Test
     @Transactional
     void getByName_noResult() throws Exception {
-        Streamer expected = new Streamer();
+        StreamerResponseDto expected = new StreamerResponseDto();
         ObjectMapper mapper = new ObjectMapper();
 
         MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "streamer/test"))
@@ -169,7 +186,7 @@ class StreamerControllerIntegrationTest {
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
         String content = result.getResponse().getContentAsString();
-        Streamer actual = mapper.readValue(content, Streamer.class);
+        StreamerResponseDto actual = mapper.readValue(content, StreamerResponseDto.class);
         assertEquals(expected, actual);
     }
 
