@@ -10,7 +10,6 @@ import java.time.ZoneOffset;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class StreamData {
 
