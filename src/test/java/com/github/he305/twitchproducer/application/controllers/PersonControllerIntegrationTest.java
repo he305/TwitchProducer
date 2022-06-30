@@ -62,7 +62,7 @@ class PersonControllerIntegrationTest {
 
         ObjectMapper mapper = new ObjectMapper();
         MvcResult result = mockMvc
-                .perform(get(ApiVersionPathConstants.V1 + "person"))
+                .perform(get(ApiVersionPathConstants.V1 + "/person"))
                 .andDo(print())
                 .andReturn();
 
@@ -74,7 +74,7 @@ class PersonControllerIntegrationTest {
     void getAll_noData() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         MvcResult result = mockMvc
-                .perform(get(ApiVersionPathConstants.V1 + "person"))
+                .perform(get(ApiVersionPathConstants.V1 + "/person"))
                 .andDo(print())
                 .andReturn();
 
@@ -91,7 +91,7 @@ class PersonControllerIntegrationTest {
 
         PersonDto expected = injectedData.get(0);
         MvcResult result = mockMvc
-                .perform(get(String.format(ApiVersionPathConstants.V1 + "person/%s", expected.getLastName())))
+                .perform(get(String.format(ApiVersionPathConstants.V1 + "/person/%s", expected.getLastName())))
                 .andDo(print())
                 .andReturn();
 
@@ -106,7 +106,7 @@ class PersonControllerIntegrationTest {
         injectedData.forEach(underTest::addPerson);
 
         MvcResult result = mockMvc
-                .perform(get(String.format(ApiVersionPathConstants.V1 + "person/%s", "not_exist")))
+                .perform(get(String.format(ApiVersionPathConstants.V1 + "/person/%s", "not_exist")))
                 .andDo(print())
                 .andReturn();
 
@@ -122,7 +122,7 @@ class PersonControllerIntegrationTest {
         String jsonObject = mapper.writeValueAsString(data);
 
         MvcResult result = mockMvc
-                .perform(post(ApiVersionPathConstants.V1 + "person")
+                .perform(post(ApiVersionPathConstants.V1 + "/person")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
                 .andDo(print())
@@ -145,7 +145,7 @@ class PersonControllerIntegrationTest {
         String jsonObject = mapper.writeValueAsString(data);
 
         MvcResult result = mockMvc
-                .perform(post(ApiVersionPathConstants.V1 + "person")
+                .perform(post(ApiVersionPathConstants.V1 + "/person")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
                 .andDo(print())

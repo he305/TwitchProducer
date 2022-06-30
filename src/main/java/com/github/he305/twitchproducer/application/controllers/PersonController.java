@@ -14,18 +14,18 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(ApiVersionPathConstants.V1 + "person")
+@RequestMapping(ApiVersionPathConstants.V1)
 @RequiredArgsConstructor
 public class PersonController {
     private final PersonService personService;
 
-    @GetMapping
+    @GetMapping("/person")
     public PersonDtoListDto getAllPersons() {
         List<PersonDto> personList = personService.getAll();
         return new PersonDtoListDto(personList);
     }
 
-    @GetMapping("/{lastName}")
+    @GetMapping("/person/{lastName}")
     public ResponseEntity<PersonDto> getPersonByLastName(@PathVariable String lastName) {
         Optional<PersonDto> personDto = personService.getPersonByLastName(lastName);
         return personDto
@@ -34,7 +34,7 @@ public class PersonController {
 
     }
 
-    @PostMapping
+    @PostMapping("/person")
     public ResponseEntity<PersonDto> addPerson(@RequestBody PersonDto personDto) {
         try {
             PersonDto saved = personService.addPerson(personDto);

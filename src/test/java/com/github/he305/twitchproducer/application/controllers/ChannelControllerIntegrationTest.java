@@ -80,7 +80,7 @@ class ChannelControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonObject = objectMapper.writeValueAsString(bodyDto);
 
-        MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + "channel")
+        MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + "/channel")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
                 .andDo(print())
@@ -97,7 +97,7 @@ class ChannelControllerIntegrationTest {
     void getAll_empty() throws Exception {
         ChannelListDto channelListDto = new ChannelListDto(Collections.emptyList());
         ObjectMapper mapper = new ObjectMapper();
-        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "channel"))
+        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "/channel"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
@@ -131,7 +131,7 @@ class ChannelControllerIntegrationTest {
         String jsonObject = objectMapper.writeValueAsString(data);
         counter++;
 
-        mockMvc.perform(post(ApiVersionPathConstants.V1 + "channel")
+        mockMvc.perform(post(ApiVersionPathConstants.V1 + "/channel")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
                 .andDo(print())
@@ -145,7 +145,7 @@ class ChannelControllerIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         int expectedSize = nicknames.size();
 
-        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "channel"))
+        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "/channel"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
@@ -165,7 +165,7 @@ class ChannelControllerIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         String expected = nicknames.get(0);
 
-        MvcResult result = mockMvc.perform(get(String.format(ApiVersionPathConstants.V1 + "channel/%s", expected)))
+        MvcResult result = mockMvc.perform(get(String.format(ApiVersionPathConstants.V1 + "/channel/%s", expected)))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
@@ -181,7 +181,7 @@ class ChannelControllerIntegrationTest {
         ChannelResponseDto expected = new ChannelResponseDto();
         ObjectMapper mapper = new ObjectMapper();
 
-        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "channel/test"))
+        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "/channel/test"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();

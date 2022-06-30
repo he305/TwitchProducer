@@ -12,23 +12,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(ApiVersionPathConstants.V1 + "channel")
+@RequestMapping(ApiVersionPathConstants.V1)
 @AllArgsConstructor
 public class ChannelController {
     @Autowired
     private final ChannelService channelService;
 
-    @GetMapping
+    @GetMapping("/channel")
     public ChannelListDto getAll() {
         return new ChannelListDto(channelService.getAllChannels());
     }
 
-    @GetMapping("/{nickname}")
+    @GetMapping("/channel/{nickname}")
     public ChannelResponseDto getByName(@PathVariable String nickname) {
         return channelService.getChannelByName(nickname).orElse(new ChannelResponseDto());
     }
 
-    @PostMapping
+    @PostMapping("/channel")
     public ResponseEntity<ChannelResponseDto> addChannel(@RequestBody ChannelAddDto channel) {
         ChannelResponseDto response = channelService.addChannel(channel);
         if (response.getId() != null) {
