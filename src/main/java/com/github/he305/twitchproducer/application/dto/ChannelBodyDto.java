@@ -1,4 +1,4 @@
-package com.github.he305.twitchproducer.common.dto;
+package com.github.he305.twitchproducer.application.dto;
 
 import com.github.he305.twitchproducer.common.entities.Platform;
 import lombok.AllArgsConstructor;
@@ -10,8 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StreamerAddDto {
+public class ChannelBodyDto {
     private String nickname;
     private Platform platform;
-    private Long personId;
 }

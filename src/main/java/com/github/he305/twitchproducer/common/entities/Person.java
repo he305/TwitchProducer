@@ -19,8 +19,8 @@ public class Person extends AuditModel{
     private String firstName;
     private String lastName;
 
-    @OneToMany(targetEntity = Streamer.class, cascade = CascadeType.ALL)
-    private Set<Streamer> streamers;
+    @OneToMany(targetEntity = Channel.class, cascade = CascadeType.ALL)
+    private Set<Channel> channels;
 
     public String getFullName() {
         return String.format("%s %s", firstName, lastName);

@@ -7,11 +7,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "streamer")
+@Table(name = "channel")
 @Getter
 @Setter
 @EqualsAndHashCode
-public class Streamer extends AuditModel {
+public class Channel extends AuditModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

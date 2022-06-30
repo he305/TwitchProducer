@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class StreamerResponseDto {
+public class ChannelResponseDto {
     private Long id;
     private String nickname;
     private Platform platform;

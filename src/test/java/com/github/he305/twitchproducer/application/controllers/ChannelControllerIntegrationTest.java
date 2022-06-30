@@ -2,10 +2,10 @@ package com.github.he305.twitchproducer.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
-import com.github.he305.twitchproducer.application.dto.StreamerListDto;
+import com.github.he305.twitchproducer.application.dto.ChannelListDto;
 import com.github.he305.twitchproducer.common.dto.PersonDto;
-import com.github.he305.twitchproducer.common.dto.StreamerAddDto;
-import com.github.he305.twitchproducer.common.dto.StreamerResponseDto;
+import com.github.he305.twitchproducer.common.dto.ChannelAddDto;
+import com.github.he305.twitchproducer.common.dto.ChannelResponseDto;
 import com.github.he305.twitchproducer.common.entities.Platform;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -35,9 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ContextConfiguration(initializers = {StreamerControllerIntegrationTest.Initializer.class})
+@ContextConfiguration(initializers = {ChannelControllerIntegrationTest.Initializer.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class StreamerControllerIntegrationTest {
+class ChannelControllerIntegrationTest {
 
     private static final PostgreSQLContainer sqlContainer;
 
@@ -56,7 +56,7 @@ class StreamerControllerIntegrationTest {
     @Autowired
     private PersonController personController;
     @Autowired
-    private StreamerController streamerController;
+    private ChannelController channelController;
 
     @BeforeAll
     void setUp() {
@@ -70,17 +70,17 @@ class StreamerControllerIntegrationTest {
 
     @Test
     void controllerIsNotNull() {
-        assertNotNull(streamerController);
+        assertNotNull(channelController);
     }
 
     @Test
     @Transactional
-    void addStreamer() throws Exception {
-        StreamerAddDto bodyDto = new StreamerAddDto("test", Platform.TWITCH, 1L);
+    void addChannel() throws Exception {
+        ChannelAddDto bodyDto = new ChannelAddDto("test", Platform.TWITCH, 1L);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonObject = objectMapper.writeValueAsString(bodyDto);
 
-        MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + "streamer")
+        MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + "channel")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
                 .andDo(print())
@@ -88,23 +88,23 @@ class StreamerControllerIntegrationTest {
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        StreamerResponseDto actual = objectMapper.readValue(content, StreamerResponseDto.class);
+        ChannelResponseDto actual = objectMapper.readValue(content, ChannelResponseDto.class);
         assertEquals(bodyDto.getNickname(), actual.getNickname());
     }
 
     @Test
     @Transactional
     void getAll_empty() throws Exception {
-        StreamerListDto streamerListDto = new StreamerListDto(Collections.emptyList());
+        ChannelListDto channelListDto = new ChannelListDto(Collections.emptyList());
         ObjectMapper mapper = new ObjectMapper();
-        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "streamer"))
+        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "channel"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        StreamerListDto list = mapper.readValue(content, StreamerListDto.class);
-        assertTrue(list.getStreamers().isEmpty());
+        ChannelListDto list = mapper.readValue(content, ChannelListDto.class);
+        assertTrue(list.getChannels().isEmpty());
     }
 
     @Transactional
@@ -115,23 +115,23 @@ class StreamerControllerIntegrationTest {
                 "test3"
         );
 
-        List<StreamerAddDto> requests = nicknames.stream()
-                .map(nick -> new StreamerAddDto(nick, Platform.TWITCH, 1L))
+        List<ChannelAddDto> requests = nicknames.stream()
+                .map(nick -> new ChannelAddDto(nick, Platform.TWITCH, 1L))
                 .collect(Collectors.toList());
-        requests.forEach(streamerController::addStreamer);
+        requests.forEach(channelController::addChannel);
         return nicknames;
     }
 
     @Test
     @Transactional
-    void addStreamer_existed() throws Exception {
+    void addChannel_existed() throws Exception {
         List<String> nicknames = injectSomeData();
-        StreamerAddDto data = new StreamerAddDto(nicknames.get(0), Platform.TWITCH, 0L);
+        ChannelAddDto data = new ChannelAddDto(nicknames.get(0), Platform.TWITCH, 0L);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonObject = objectMapper.writeValueAsString(data);
         counter++;
 
-        mockMvc.perform(post(ApiVersionPathConstants.V1 + "streamer")
+        mockMvc.perform(post(ApiVersionPathConstants.V1 + "channel")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
                 .andDo(print())
@@ -145,16 +145,16 @@ class StreamerControllerIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         int expectedSize = nicknames.size();
 
-        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "streamer"))
+        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "channel"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        StreamerListDto streamers = mapper.readValue(content, StreamerListDto.class);
-        assertEquals(expectedSize, streamers.getStreamers().size());
-        streamers.getStreamers().forEach(streamer ->
-                assertTrue(nicknames.contains(streamer.getNickname())));
+        ChannelListDto channels = mapper.readValue(content, ChannelListDto.class);
+        assertEquals(expectedSize, channels.getChannels().size());
+        channels.getChannels().forEach(channel ->
+                assertTrue(nicknames.contains(channel.getNickname())));
     }
 
     @Test
@@ -165,28 +165,28 @@ class StreamerControllerIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         String expected = nicknames.get(0);
 
-        MvcResult result = mockMvc.perform(get(String.format(ApiVersionPathConstants.V1 + "streamer/%s", expected)))
+        MvcResult result = mockMvc.perform(get(String.format(ApiVersionPathConstants.V1 + "channel/%s", expected)))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        StreamerResponseDto actual = mapper.readValue(content, StreamerResponseDto.class);
+        ChannelResponseDto actual = mapper.readValue(content, ChannelResponseDto.class);
         assertEquals(expected, actual.getNickname());
     }
 
     @Test
     @Transactional
     void getByName_noResult() throws Exception {
-        StreamerResponseDto expected = new StreamerResponseDto();
+        ChannelResponseDto expected = new ChannelResponseDto();
         ObjectMapper mapper = new ObjectMapper();
 
-        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "streamer/test"))
+        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "channel/test"))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
         String content = result.getResponse().getContentAsString();
-        StreamerResponseDto actual = mapper.readValue(content, StreamerResponseDto.class);
+        ChannelResponseDto actual = mapper.readValue(content, ChannelResponseDto.class);
         assertEquals(expected, actual);
     }
 
