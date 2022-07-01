@@ -1,13 +1,13 @@
 package com.github.he305.twitchproducer.application.services;
 
 import com.github.he305.twitchproducer.application.mapper.ChannelResponseMapper;
-import com.github.he305.twitchproducer.application.repositories.PersonRepository;
 import com.github.he305.twitchproducer.application.repositories.ChannelRepository;
+import com.github.he305.twitchproducer.application.repositories.PersonRepository;
 import com.github.he305.twitchproducer.common.dto.ChannelAddDto;
 import com.github.he305.twitchproducer.common.dto.ChannelResponseDto;
+import com.github.he305.twitchproducer.common.entities.Channel;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.entities.Platform;
-import com.github.he305.twitchproducer.common.entities.Channel;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.mapper.ChannelAddMapper;
@@ -77,6 +77,18 @@ class ChannelServiceImplTest {
     }
 
     @Test
+    void getPersonChannelByName_nullId() {
+        assertThrows(NullPointerException.class, () ->
+                underTest.getPersonChannelByName(null, "123"));
+    }
+
+    @Test
+    void getPersonChannelByName_nullNickname() {
+        assertThrows(NullPointerException.class, () ->
+                underTest.getPersonChannelByName(0L, null));
+    }
+
+    @Test
     void getPersonChannelByName_notFoundNickname() {
         Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(List.of());
         Optional<ChannelResponseDto> expected = Optional.empty();
@@ -112,6 +124,19 @@ class ChannelServiceImplTest {
         Optional<ChannelResponseDto> actual = underTest.getPersonChannelByName(existingPersonId, existingNickname);
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
+    }
+
+    @Test
+    void addChannel_nullId() {
+        ChannelAddDto data = new ChannelAddDto();
+        assertThrows(NullPointerException.class, () ->
+                underTest.addChannel(null, data));
+    }
+
+    @Test
+    void addChannel_nullChannelDto() {
+        assertThrows(NullPointerException.class, () ->
+                underTest.addChannel(0L, null));
     }
 
     @Test
