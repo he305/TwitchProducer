@@ -3,10 +3,9 @@ package com.github.he305.twitchproducer.application.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
 import com.github.he305.twitchproducer.application.dto.ChannelListDto;
-import com.github.he305.twitchproducer.common.dto.PersonAddDto;
-import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.dto.ChannelAddDto;
 import com.github.he305.twitchproducer.common.dto.ChannelResponseDto;
+import com.github.he305.twitchproducer.common.dto.PersonAddDto;
 import com.github.he305.twitchproducer.common.entities.Platform;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -49,6 +48,7 @@ class ChannelControllerIntegrationTest {
                 .withPassword("sa");
         sqlContainer.start();
     }
+
     @Autowired
     private MockMvc mockMvc;
 
