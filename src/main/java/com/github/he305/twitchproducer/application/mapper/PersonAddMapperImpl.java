@@ -5,7 +5,7 @@ import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.mapper.PersonAddMapper;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.util.List;
 
 @Component
 public class PersonAddMapperImpl implements PersonAddMapper {
@@ -15,7 +15,7 @@ public class PersonAddMapperImpl implements PersonAddMapper {
                 null,
                 dto.getFirstName(),
                 dto.getLastName(),
-                new HashSet<>()
+                List.of()
         );
     }
 }

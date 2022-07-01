@@ -1,8 +1,8 @@
 package com.github.he305.twitchproducer.application.services;
 
+import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.application.repositories.PersonRepository;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
-import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
 import com.github.he305.twitchproducer.common.mapper.PersonAddMapper;
@@ -39,7 +39,7 @@ class PersonServiceImplTest {
     @Test
     void getAll() {
         Person person = new Person(0L, "test1", "test2", null);
-        PersonResponseDto personResponseDto = new PersonResponseDto(0L, "test1", "test2");
+        PersonResponseDto personResponseDto = new PersonResponseDto(0L, "test1", "test2", null);
         List<PersonResponseDto> expected = List.of(personResponseDto);
         Mockito.when(personRepository.findAll()).thenReturn(List.of(person));
         Mockito.when(personResponseMapper.getPersonDto(person)).thenReturn(personResponseDto);

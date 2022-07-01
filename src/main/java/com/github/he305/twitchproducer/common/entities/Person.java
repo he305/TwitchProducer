@@ -3,13 +3,14 @@ package com.github.he305.twitchproducer.common.entities;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Table(name = "person")
 @EqualsAndHashCode
 public class Person extends AuditModel {
     @Id
@@ -20,7 +21,8 @@ public class Person extends AuditModel {
     private String lastName;
 
     @OneToMany(targetEntity = Channel.class, cascade = CascadeType.ALL)
-    private Set<Channel> channels;
+    @JoinColumn(name = "person_id")
+    private List<Channel> channels;
 
     public String getFullName() {
         return String.format("%s %s", firstName, lastName);

@@ -1,8 +1,8 @@
 package com.github.he305.twitchproducer.application.services;
 
+import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.application.repositories.PersonRepository;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
-import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
 import com.github.he305.twitchproducer.common.mapper.PersonAddMapper;

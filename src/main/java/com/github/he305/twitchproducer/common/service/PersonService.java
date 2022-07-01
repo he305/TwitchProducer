@@ -1,7 +1,7 @@
 package com.github.he305.twitchproducer.common.service;
 
+import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
-import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
 
 import java.util.List;

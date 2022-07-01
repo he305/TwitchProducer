@@ -18,7 +18,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -101,8 +104,8 @@ class ChannelServiceImplTest {
         Long notExistingPersonId = 2L;
         String existingNickname = "test";
         List<Channel> existingChannels = List.of(
-                new Channel(0L, existingNickname, Platform.TWITCH, new Person(0L, "test", "test", new HashSet<>())),
-                new Channel(1L, existingNickname, Platform.TWITCH, new Person(1L, "test", "test", new HashSet<>()))
+                new Channel(0L, existingNickname, Platform.TWITCH, new Person(0L, "test", "test", Collections.emptyList())),
+                new Channel(1L, existingNickname, Platform.TWITCH, new Person(1L, "test", "test", Collections.emptyList()))
         );
         Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(existingChannels);
         Optional<ChannelResponseDto> expected = Optional.empty();
@@ -115,8 +118,8 @@ class ChannelServiceImplTest {
         Long existingPersonId = 1L;
         String existingNickname = "test";
         List<Channel> existingChannels = List.of(
-                new Channel(0L, existingNickname, Platform.TWITCH, new Person(1L, "test", "test", new HashSet<>())),
-                new Channel(1L, existingNickname, Platform.TWITCH, new Person(2L, "test1", "test2", new HashSet<>()))
+                new Channel(0L, existingNickname, Platform.TWITCH, new Person(1L, "test", "test", Collections.emptyList())),
+                new Channel(1L, existingNickname, Platform.TWITCH, new Person(2L, "test1", "test2", Collections.emptyList()))
         );
         Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(existingChannels);
         ChannelResponseDto expected = new ChannelResponseDto(0L, existingNickname, Platform.TWITCH, "");
@@ -149,7 +152,7 @@ class ChannelServiceImplTest {
 
     @Test
     void addChannel_alreadyExistsName() {
-        Person existingPerson = new Person(0L, "", "", new HashSet<>());
+        Person existingPerson = new Person(0L, "", "", Collections.emptyList());
         Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(existingPerson));
         Channel existingChannel = new Channel(0L, "", Platform.TWITCH, existingPerson);
         Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(List.of(existingChannel));
@@ -172,7 +175,7 @@ class ChannelServiceImplTest {
     void addChannel_validFull() {
         ChannelAddDto data = new ChannelAddDto("1", Platform.TWITCH);
 
-        Person expectedPerson = new Person(0L, "", "", new HashSet<>());
+        Person expectedPerson = new Person(0L, "", "", Collections.emptyList());
 
         ChannelResponseDto expected = new ChannelResponseDto(0L, "1", Platform.TWITCH, "");
         Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(expectedPerson));

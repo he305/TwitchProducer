@@ -5,7 +5,7 @@ import com.github.he305.twitchproducer.common.entities.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -30,7 +30,7 @@ class PersonAddMapperImplTest {
                 null,
                 "test1",
                 "test2",
-                new HashSet<>()
+                Collections.emptyList()
         );
 
         Person actual = underTest.getPerson(data);
