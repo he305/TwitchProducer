@@ -28,8 +28,12 @@ public class ChannelController {
     }
 
     @GetMapping("/channel/{nickname}")
-    public ChannelResponseDto getByName(@PathVariable String nickname) {
-        return channelService.getChannelByName(nickname).orElse(new ChannelResponseDto());
+    public ResponseEntity<ChannelResponseDto> getByName(@PathVariable String nickname) {
+        Optional<ChannelResponseDto> channel = channelService.getChannelByName(nickname);
+        if (channel.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(channel.get(), HttpStatus.OK);
     }
 
     @GetMapping("/person/{personId}/channel/{channelName}")

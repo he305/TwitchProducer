@@ -46,18 +46,18 @@ class ChannelControllerTest {
         String data = "1";
         ChannelResponseDto expected = new ChannelResponseDto(1L, "1", Platform.TWITCH, null);
         Mockito.when(channelService.getChannelByName(data)).thenReturn(Optional.of(expected));
-        ChannelResponseDto actual = underTest.getByName(data);
-        assertEquals(expected, actual);
+        ResponseEntity<ChannelResponseDto> actual = underTest.getByName(data);
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
     }
 
     @Test
     void getByName_noData() {
         String data = "1";
-        ChannelResponseDto expected = new ChannelResponseDto();
         Mockito.when(channelService.getChannelByName(data)).thenReturn(Optional.empty());
 
-        ChannelResponseDto actual = underTest.getByName(data);
-        assertEquals(expected, actual);
+        ResponseEntity<ChannelResponseDto> actual = underTest.getByName(data);
+        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
     }
 
     @Test

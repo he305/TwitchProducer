@@ -266,13 +266,10 @@ class ChannelControllerIntegrationTest {
         ChannelResponseDto expected = new ChannelResponseDto();
         ObjectMapper mapper = new ObjectMapper();
 
-        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + "/channel/test"))
+        mockMvc.perform(get(ApiVersionPathConstants.V1 + "/channel/test"))
                 .andDo(print())
-                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isNotFound())
                 .andReturn();
-        String content = result.getResponse().getContentAsString();
-        ChannelResponseDto actual = mapper.readValue(content, ChannelResponseDto.class);
-        assertEquals(expected, actual);
     }
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
