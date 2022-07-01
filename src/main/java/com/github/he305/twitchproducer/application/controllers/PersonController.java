@@ -2,7 +2,8 @@ package com.github.he305.twitchproducer.application.controllers;
 
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
 import com.github.he305.twitchproducer.application.dto.PersonDtoListDto;
-import com.github.he305.twitchproducer.common.dto.PersonDto;
+import com.github.he305.twitchproducer.common.dto.PersonAddDto;
+import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
 import com.github.he305.twitchproducer.common.service.PersonService;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +22,13 @@ public class PersonController {
 
     @GetMapping("/person")
     public PersonDtoListDto getAllPersons() {
-        List<PersonDto> personList = personService.getAll();
+        List<PersonResponseDto> personList = personService.getAll();
         return new PersonDtoListDto(personList);
     }
 
     @GetMapping("/person/{lastName}")
-    public ResponseEntity<PersonDto> getPersonByLastName(@PathVariable String lastName) {
-        Optional<PersonDto> personDto = personService.getPersonByLastName(lastName);
+    public ResponseEntity<PersonResponseDto> getPersonByLastName(@PathVariable String lastName) {
+        Optional<PersonResponseDto> personDto = personService.getPersonByLastName(lastName);
         return personDto
                 .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -35,9 +36,9 @@ public class PersonController {
     }
 
     @PostMapping("/person")
-    public ResponseEntity<PersonDto> addPerson(@RequestBody PersonDto personDto) {
+    public ResponseEntity<PersonResponseDto> addPerson(@RequestBody PersonAddDto personAddDto) {
         try {
-            PersonDto saved = personService.addPerson(personDto);
+            PersonResponseDto saved = personService.addPerson(personAddDto);
             return new ResponseEntity<>(saved, HttpStatus.CREATED);
         } catch (EntityExistsException exception) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

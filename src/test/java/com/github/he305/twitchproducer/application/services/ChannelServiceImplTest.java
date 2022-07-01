@@ -8,6 +8,8 @@ import com.github.he305.twitchproducer.common.dto.ChannelResponseDto;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.entities.Platform;
 import com.github.he305.twitchproducer.common.entities.Channel;
+import com.github.he305.twitchproducer.common.exception.EntityExistsException;
+import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.mapper.ChannelAddMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,9 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,6 +47,14 @@ class ChannelServiceImplTest {
     }
 
     @Test
+    void getChannelByName_notFound() {
+        Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(List.of());
+        Optional<ChannelResponseDto> expected = Optional.empty();
+        Optional<ChannelResponseDto> actual = underTest.getChannelByName("test");
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void getChannelByName_validName() {
         ChannelResponseDto expected = new ChannelResponseDto(1L, "1", Platform.TWITCH, null);
 
@@ -69,42 +77,86 @@ class ChannelServiceImplTest {
     }
 
     @Test
-    void addChannel_emptyName() {
-        ChannelAddDto data = new ChannelAddDto("", Platform.TWITCH, 0L);
-        ChannelResponseDto expected = new ChannelResponseDto();
-        ChannelResponseDto actual = underTest.addChannel(data);
+    void getPersonChannelByName_notFoundNickname() {
+        Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(List.of());
+        Optional<ChannelResponseDto> expected = Optional.empty();
+        Optional<ChannelResponseDto> actual = underTest.getPersonChannelByName(0L, "smth");
         assertEquals(expected, actual);
     }
 
     @Test
-    void addChannel_personNotExist() {
-        ChannelAddDto data = new ChannelAddDto("test", Platform.TWITCH, 0L);
-        Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
-        ChannelResponseDto expected = new ChannelResponseDto();
-        ChannelResponseDto actual = underTest.addChannel(data);
+    void getPersonChannelByName_noPerson() {
+        Long notExistingPersonId = 2L;
+        String existingNickname = "test";
+        List<Channel> existingChannels = List.of(
+                new Channel(0L, existingNickname, Platform.TWITCH, new Person(0L, "test", "test", new HashSet<>())),
+                new Channel(1L, existingNickname, Platform.TWITCH, new Person(1L, "test", "test", new HashSet<>()))
+        );
+        Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(existingChannels);
+        Optional<ChannelResponseDto> expected = Optional.empty();
+        Optional<ChannelResponseDto> actual = underTest.getPersonChannelByName(notExistingPersonId, existingNickname);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void getPersonChannelByName_valid() {
+        Long existingPersonId = 1L;
+        String existingNickname = "test";
+        List<Channel> existingChannels = List.of(
+                new Channel(0L, existingNickname, Platform.TWITCH, new Person(1L, "test", "test", new HashSet<>())),
+                new Channel(1L, existingNickname, Platform.TWITCH, new Person(2L, "test1", "test2", new HashSet<>()))
+        );
+        Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(existingChannels);
+        ChannelResponseDto expected = new ChannelResponseDto(0L, existingNickname, Platform.TWITCH, "");
+        Mockito.when(channelResponseMapper.toDto(Mockito.any())).thenReturn(expected);
+        Optional<ChannelResponseDto> actual = underTest.getPersonChannelByName(existingPersonId, existingNickname);
+        assertTrue(actual.isPresent());
+        assertEquals(expected, actual.get());
+    }
+
+    @Test
+    void addChannel_noPersonFound() {
+        Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        ChannelAddDto data = new ChannelAddDto("1", Platform.TWITCH);
+        assertThrows(EntityNotFoundException.class, () ->
+                underTest.addChannel(0L, data));
     }
 
     @Test
     void addChannel_alreadyExistsName() {
-        String nickname = "1";
-        ChannelAddDto data = new ChannelAddDto(nickname, Platform.TWITCH, 0L);
-        ChannelResponseDto expected = new ChannelResponseDto();
-        Mockito.when(channelRepository.findByNickname(nickname)).thenReturn(List.of(new Channel()));
-        ChannelResponseDto actual = underTest.addChannel(data);
-        assertEquals(expected, actual);
+        Person existingPerson = new Person(0L, "", "", new HashSet<>());
+        Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(existingPerson));
+        Channel existingChannel = new Channel(0L, "", Platform.TWITCH, existingPerson);
+        Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(List.of(existingChannel));
+        Mockito.when(channelResponseMapper.toDto(Mockito.any())).thenReturn(new ChannelResponseDto());
+
+        Long dataId = existingPerson.getId();
+        ChannelAddDto data = new ChannelAddDto("test", Platform.TWITCH);
+        assertThrows(EntityExistsException.class, () ->
+                underTest.addChannel(dataId, data));
+    }
+
+    @Test
+    void addChannel_emptyName() {
+        ChannelAddDto data = new ChannelAddDto("", Platform.TWITCH);
+        assertThrows(IllegalArgumentException.class, () ->
+                underTest.addChannel(0L, data));
     }
 
     @Test
     void addChannel_validFull() {
-        ChannelAddDto data = new ChannelAddDto("1", Platform.TWITCH, 0L);
-        Person expectedPerson = new Person();
+        ChannelAddDto data = new ChannelAddDto("1", Platform.TWITCH);
+
+        Person expectedPerson = new Person(0L, "", "", new HashSet<>());
+
         ChannelResponseDto expected = new ChannelResponseDto(0L, "1", Platform.TWITCH, "");
-        Mockito.when(channelRepository.save(Mockito.any())).thenReturn(new Channel());
         Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(expectedPerson));
+        Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(new ArrayList<>());
+
         Mockito.when(channelAddMapper.getChannel(data)).thenReturn(new Channel());
+        Mockito.when(channelRepository.save(Mockito.any())).thenReturn(new Channel());
         Mockito.when(channelResponseMapper.toDto(Mockito.any())).thenReturn(expected);
-        ChannelResponseDto actual = underTest.addChannel(data);
+        ChannelResponseDto actual = underTest.addChannel(0L, data);
         assertEquals(expected, actual);
     }
 }

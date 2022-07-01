@@ -1,12 +1,14 @@
 package com.github.he305.twitchproducer.application.services;
 
 import com.github.he305.twitchproducer.application.mapper.ChannelResponseMapper;
-import com.github.he305.twitchproducer.application.repositories.PersonRepository;
 import com.github.he305.twitchproducer.application.repositories.ChannelRepository;
+import com.github.he305.twitchproducer.application.repositories.PersonRepository;
 import com.github.he305.twitchproducer.common.dto.ChannelAddDto;
 import com.github.he305.twitchproducer.common.dto.ChannelResponseDto;
-import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.entities.Channel;
+import com.github.he305.twitchproducer.common.entities.Person;
+import com.github.he305.twitchproducer.common.exception.EntityExistsException;
+import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.mapper.ChannelAddMapper;
 import com.github.he305.twitchproducer.common.service.ChannelService;
 import lombok.AllArgsConstructor;
@@ -44,25 +46,38 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public Optional<ChannelResponseDto> getChannelByName(@NonNull String nickname) {
-        Optional<Channel> channel = getChannelByNameInner(nickname);
+        Optional<Channel> channel = channelRepository.findByNickname(nickname).stream().findFirst();
         if (channel.isEmpty())
             return Optional.empty();
 
         return Optional.of(channelResponseMapper.toDto(channel.get()));
     }
 
-    private Optional<Channel> getChannelByNameInner(@NonNull String nickname) {
-        return channelRepository.findByNickname(nickname).stream().findFirst();
+    @Override
+    public Optional<ChannelResponseDto> getPersonChannelByName(@NonNull Long personId, @NonNull String channelName) {
+        Optional<Channel> channel = channelRepository
+                .findByNickname(channelName)
+                .stream()
+                .filter(s -> s.getPerson().getId().equals(personId))
+                .findFirst();
+        if (channel.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(channelResponseMapper.toDto(channel.get()));
     }
 
     @Override
-    public ChannelResponseDto addChannel(@NotNull ChannelAddDto channelAddDto) {
-        if (channelAddDto.getNickname().isEmpty() || getChannelByNameInner(channelAddDto.getNickname()).isPresent())
-            return new ChannelResponseDto();
+    public ChannelResponseDto addChannel(@NonNull Long personId, @NotNull ChannelAddDto channelAddDto) {
+        if (channelAddDto.getNickname().isEmpty())
+            throw new IllegalArgumentException();
 
-        Optional<Person> person = personRepository.findById(channelAddDto.getPersonId());
+        Optional<Person> person = personRepository.findById(personId);
         if (person.isEmpty())
-            return new ChannelResponseDto();
+            throw new EntityNotFoundException();
+
+        if (getPersonChannelByName(personId, channelAddDto.getNickname()).isPresent())
+            throw new EntityExistsException();
 
         Channel channel = channelAddMapper.getChannel(channelAddDto);
         channel.setPerson(person.get());

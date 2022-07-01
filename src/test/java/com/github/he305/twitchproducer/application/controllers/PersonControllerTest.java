@@ -1,7 +1,8 @@
 package com.github.he305.twitchproducer.application.controllers;
 
 import com.github.he305.twitchproducer.application.dto.PersonDtoListDto;
-import com.github.he305.twitchproducer.common.dto.PersonDto;
+import com.github.he305.twitchproducer.common.dto.PersonAddDto;
+import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
 import com.github.he305.twitchproducer.common.service.PersonService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,48 +34,49 @@ class PersonControllerTest {
 
     @Test
     void getAllPersons() {
-        List<PersonDto> personDtoList = List.of(
-                new PersonDto("", ""),
-                new PersonDto("", ""),
-                new PersonDto("", "")
+        List<PersonResponseDto> personResponseDtoList = List.of(
+                new PersonResponseDto(0L, "", ""),
+                new PersonResponseDto(1L, "", ""),
+                new PersonResponseDto(2L, "", "")
         );
 
-        Mockito.when(personService.getAll()).thenReturn(personDtoList);
+        Mockito.when(personService.getAll()).thenReturn(personResponseDtoList);
         PersonDtoListDto actual = underTest.getAllPersons();
-        assertEquals(personDtoList.size(), actual.getPersons().size());
+        assertEquals(personResponseDtoList.size(), actual.getPersons().size());
     }
 
     @Test
     void getPersonByLastName_existingEntry() {
-        PersonDto data = new PersonDto("test1", "test2");
+        PersonResponseDto data = new PersonResponseDto(0L, "test1", "test2");
         Mockito.when(personService.getPersonByLastName(Mockito.any())).thenReturn(Optional.of(data));
-        ResponseEntity<PersonDto> actual = underTest.getPersonByLastName("");
+        ResponseEntity<PersonResponseDto> actual = underTest.getPersonByLastName("");
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(data, actual.getBody());
     }
 
     @Test
     void getPersonByLastName_notExistingEntry() {
-        PersonDto data = new PersonDto("test1", "test2");
+        PersonResponseDto data = new PersonResponseDto(0L, "test1", "test2");
         Mockito.when(personService.getPersonByLastName(Mockito.any())).thenReturn(Optional.empty());
-        ResponseEntity<PersonDto> actual = underTest.getPersonByLastName("");
+        ResponseEntity<PersonResponseDto> actual = underTest.getPersonByLastName("");
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
     }
 
     @Test
     void addPerson_success() {
-        PersonDto data = new PersonDto("test1", "test2");
-        Mockito.when(personService.addPerson(Mockito.any())).thenReturn(data);
-        ResponseEntity<PersonDto> actual = underTest.addPerson(data);
+        PersonAddDto data = new PersonAddDto("test1", "test2");
+        PersonResponseDto expected = new PersonResponseDto(0L, "test1", "test2");
+        Mockito.when(personService.addPerson(Mockito.any())).thenReturn(expected);
+        ResponseEntity<PersonResponseDto> actual = underTest.addPerson(data);
         assertEquals(HttpStatus.CREATED, actual.getStatusCode());
-        assertEquals(data, actual.getBody());
+        assertEquals(expected, actual.getBody());
     }
 
     @Test
     void addPerson_alreadyExist() {
-        PersonDto data = new PersonDto("test1", "test2");
+        PersonAddDto data = new PersonAddDto("test1", "test2");
         Mockito.when(personService.addPerson(Mockito.any())).thenThrow(EntityExistsException.class);
-        ResponseEntity<PersonDto> actual = underTest.addPerson(data);
+        ResponseEntity<PersonResponseDto> actual = underTest.addPerson(data);
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
     }
 }

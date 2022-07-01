@@ -1,10 +1,12 @@
 package com.github.he305.twitchproducer.application.services;
 
 import com.github.he305.twitchproducer.application.repositories.PersonRepository;
-import com.github.he305.twitchproducer.common.dto.PersonDto;
+import com.github.he305.twitchproducer.common.dto.PersonAddDto;
+import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
-import com.github.he305.twitchproducer.common.mapper.PersonMapper;
+import com.github.he305.twitchproducer.common.mapper.PersonAddMapper;
+import com.github.he305.twitchproducer.common.mapper.PersonResponseMapper;
 import com.github.he305.twitchproducer.common.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,30 +20,31 @@ import java.util.stream.Collectors;
 public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
-    private final PersonMapper mapper;
+    private final PersonResponseMapper responseMapper;
+    private final PersonAddMapper addMapper;
 
     @Override
-    public List<PersonDto> getAll() {
+    public List<PersonResponseDto> getAll() {
         List<Person> persons = personRepository.findAll();
-        return persons.stream().map(mapper::getPersonDto).collect(Collectors.toList());
+        return persons.stream().map(responseMapper::getPersonDto).collect(Collectors.toList());
     }
 
     @Override
-    public Optional<PersonDto> getPersonByLastName(String lastName) {
+    public Optional<PersonResponseDto> getPersonByLastName(String lastName) {
         Optional<Person> person = personRepository.findByLastName(lastName);
         if (person.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.ofNullable(mapper.getPersonDto(person.get()));
+        return Optional.ofNullable(responseMapper.getPersonDto(person.get()));
     }
 
     @Override
-    public PersonDto addPerson(PersonDto personDto) {
-        Person person = mapper.getPerson(personDto);
+    public PersonResponseDto addPerson(PersonAddDto personResponseDto) {
+        Person person = addMapper.getPerson(personResponseDto);
         if (personRepository.findByLastName(person.getLastName()).isPresent()) {
             throw new EntityExistsException();
         }
         personRepository.save(person);
-        return personDto;
+        return responseMapper.getPersonDto(person);
     }
 }

@@ -12,5 +12,7 @@ public interface ChannelService {
 
     Optional<ChannelResponseDto> getChannelByName(@NonNull String nickname);
 
-    ChannelResponseDto addChannel(@NonNull ChannelAddDto channelAddDto);
+    Optional<ChannelResponseDto> getPersonChannelByName(@NonNull Long personId, @NonNull String channelName);
+
+    ChannelResponseDto addChannel(@NonNull Long personId, @NonNull ChannelAddDto channelAddDto);
 }

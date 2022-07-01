@@ -1,16 +1,17 @@
 package com.github.he305.twitchproducer.common.service;
 
-import com.github.he305.twitchproducer.common.dto.PersonDto;
+import com.github.he305.twitchproducer.common.dto.PersonAddDto;
+import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface PersonService {
-    List<PersonDto> getAll();
+    List<PersonResponseDto> getAll();
 
-    Optional<PersonDto> getPersonByLastName(String lastName);
+    Optional<PersonResponseDto> getPersonByLastName(String lastName);
 
-    PersonDto addPerson(PersonDto personDto) throws EntityExistsException;
+    PersonResponseDto addPerson(PersonAddDto personResponseDto) throws EntityExistsException;
 
 }

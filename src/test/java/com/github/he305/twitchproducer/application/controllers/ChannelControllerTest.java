@@ -61,13 +61,32 @@ class ChannelControllerTest {
     }
 
     @Test
+    void getPersonChannelByName_found() {
+        String nickname = "";
+        ChannelResponseDto expected = new ChannelResponseDto(0L, "", Platform.TWITCH, "");
+        Mockito.when(channelService.getPersonChannelByName(0L, nickname)).thenReturn(Optional.of(expected));
+        ResponseEntity<ChannelResponseDto> actual = underTest.getPersonChannelByName(0L, nickname);
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    void getPersonChannelByName_notFound() {
+        String nickname = "";
+        Optional<ChannelResponseDto> expected = Optional.empty();
+        Mockito.when(channelService.getPersonChannelByName(0L, nickname)).thenReturn(expected);
+        ResponseEntity<ChannelResponseDto> actual = underTest.getPersonChannelByName(0L, nickname);
+        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
+    }
+
+    @Test
     void addChannel_validInput() {
         String nickname = "test";
-        ChannelAddDto channelAddDto = new ChannelAddDto(nickname, Platform.TWITCH, 0L);
+        ChannelAddDto channelAddDto = new ChannelAddDto(nickname, Platform.TWITCH);
         ChannelResponseDto expected = new ChannelResponseDto(0L, nickname, Platform.TWITCH, "");
-        Mockito.when(channelService.addChannel(channelAddDto)).thenReturn(expected);
+        Mockito.when(channelService.addChannel(0L, channelAddDto)).thenReturn(expected);
 
-        ResponseEntity<ChannelResponseDto> actual = underTest.addChannel(channelAddDto);
+        ResponseEntity<ChannelResponseDto> actual = underTest.addChannel(0L, channelAddDto);
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }
@@ -75,11 +94,11 @@ class ChannelControllerTest {
     @Test
     void addChannel_serviceError() {
         String nickname = "test";
-        ChannelAddDto data = new ChannelAddDto(nickname, Platform.TWITCH, 0L);
+        ChannelAddDto data = new ChannelAddDto(nickname, Platform.TWITCH);
         ResponseEntity<ChannelResponseDto> expected = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        Mockito.when(channelService.addChannel(data)).thenReturn(new ChannelResponseDto());
+        Mockito.when(channelService.addChannel(0L, data)).thenThrow(IllegalArgumentException.class);
 
-        ResponseEntity<ChannelResponseDto> actual = underTest.addChannel(data);
+        ResponseEntity<ChannelResponseDto> actual = underTest.addChannel(0L, data);
         assertEquals(expected, actual);
     }
 }

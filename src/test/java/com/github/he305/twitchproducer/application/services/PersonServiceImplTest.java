@@ -1,10 +1,12 @@
 package com.github.he305.twitchproducer.application.services;
 
 import com.github.he305.twitchproducer.application.repositories.PersonRepository;
-import com.github.he305.twitchproducer.common.dto.PersonDto;
+import com.github.he305.twitchproducer.common.dto.PersonAddDto;
+import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
-import com.github.he305.twitchproducer.common.mapper.PersonMapper;
+import com.github.he305.twitchproducer.common.mapper.PersonAddMapper;
+import com.github.he305.twitchproducer.common.mapper.PersonResponseMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,33 +25,37 @@ class PersonServiceImplTest {
     @Mock
     private PersonRepository personRepository;
     @Mock
-    private PersonMapper personMapper;
+    private PersonResponseMapper personResponseMapper;
+    @Mock
+    private PersonAddMapper personAddMapper;
 
     private PersonServiceImpl underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new PersonServiceImpl(personRepository, personMapper);
+        underTest = new PersonServiceImpl(personRepository, personResponseMapper, personAddMapper);
     }
 
     @Test
     void getAll() {
         Person person = new Person(0L, "test1", "test2", null);
-        PersonDto personDto = new PersonDto("test1", "test2");
+        PersonResponseDto personResponseDto = new PersonResponseDto(0L, "test1", "test2");
+        List<PersonResponseDto> expected = List.of(personResponseDto);
         Mockito.when(personRepository.findAll()).thenReturn(List.of(person));
-        Mockito.when(personMapper.getPersonDto(person)).thenReturn(personDto);
+        Mockito.when(personResponseMapper.getPersonDto(person)).thenReturn(personResponseDto);
 
-        List<PersonDto> actual = underTest.getAll();
-        assertEquals(1, actual.size());
+        List<PersonResponseDto> actual = underTest.getAll();
+        assertEquals(expected.size(), actual.size());
+        assertEquals(actual, expected);
     }
 
     @Test
     void getPersonByLastName_existing() {
         String data = "test";
-        Mockito.when(personMapper.getPersonDto(Mockito.any())).thenReturn(new PersonDto());
+        Mockito.when(personResponseMapper.getPersonDto(Mockito.any())).thenReturn(new PersonResponseDto());
         Mockito.when(personRepository.findByLastName(Mockito.any())).thenReturn(Optional.of(new Person()));
 
-        Optional<PersonDto> actual = underTest.getPersonByLastName(data);
+        Optional<PersonResponseDto> actual = underTest.getPersonByLastName(data);
         assertTrue(actual.isPresent());
     }
 
@@ -58,16 +64,16 @@ class PersonServiceImplTest {
         String data = "test";
         Mockito.when(personRepository.findByLastName(data)).thenReturn(Optional.empty());
 
-        Optional<PersonDto> actual = underTest.getPersonByLastName(data);
+        Optional<PersonResponseDto> actual = underTest.getPersonByLastName(data);
         assertTrue(actual.isEmpty());
     }
 
     @Test
     void addPerson_alreadyExist() {
-        Mockito.when(personMapper.getPerson(Mockito.any())).thenReturn(new Person());
+        Mockito.when(personAddMapper.getPerson(Mockito.any())).thenReturn(new Person());
         Mockito.when(personRepository.findByLastName(Mockito.any())).thenReturn(Optional.of(new Person()));
 
-        PersonDto data = new PersonDto("", "");
+        PersonAddDto data = new PersonAddDto("", "");
 
         assertThrows(EntityExistsException.class, () -> underTest.addPerson(data));
     }
@@ -76,11 +82,11 @@ class PersonServiceImplTest {
     void addPerson_success() {
         Person person = new Person();
 
-        Mockito.when(personMapper.getPerson(Mockito.any())).thenReturn(person);
+        Mockito.when(personAddMapper.getPerson(Mockito.any())).thenReturn(person);
         Mockito.when(personRepository.findByLastName(Mockito.any())).thenReturn(Optional.empty());
         Mockito.when(personRepository.save(Mockito.any())).thenReturn(person);
 
-        PersonDto data = new PersonDto();
+        PersonAddDto data = new PersonAddDto();
         assertDoesNotThrow(() -> underTest.addPerson(data));
     }
 }

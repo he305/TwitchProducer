@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class PersonDto {
+public class PersonAddDto {
     private String firstName;
     private String lastName;
 }

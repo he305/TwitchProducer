@@ -3,7 +3,8 @@ package com.github.he305.twitchproducer.application.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
 import com.github.he305.twitchproducer.application.dto.PersonDtoListDto;
-import com.github.he305.twitchproducer.common.dto.PersonDto;
+import com.github.he305.twitchproducer.common.dto.PersonAddDto;
+import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,18 +48,18 @@ class PersonControllerIntegrationTest {
     @Autowired
     private PersonController underTest;
 
-    private List<PersonDto> prepareInjectData() {
+    private List<PersonAddDto> prepareInjectData() {
         return List.of(
-                new PersonDto("test", "test1"),
-                new PersonDto("test2", "test3"),
-                new PersonDto("test4", "test5")
+                new PersonAddDto("test", "test1"),
+                new PersonAddDto("test2", "test3"),
+                new PersonAddDto("test4", "test5")
         );
     }
 
     @Test
     @Transactional
     void getAll_existingData() throws Exception {
-        List<PersonDto> injectedData = prepareInjectData();
+        List<PersonAddDto> injectedData = prepareInjectData();
         injectedData.forEach(underTest::addPerson);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -66,8 +68,9 @@ class PersonControllerIntegrationTest {
                 .andDo(print())
                 .andReturn();
 
-        PersonDtoListDto personDtoListDto = mapper.readValue(result.getResponse().getContentAsString(), PersonDtoListDto.class);
-        assertEquals(injectedData, personDtoListDto.getPersons());
+        PersonDtoListDto actual = mapper.readValue(result.getResponse().getContentAsString(), PersonDtoListDto.class);
+        List<PersonAddDto> convertedActual = actual.getPersons().stream().map(p -> new PersonAddDto(p.getFirstName(), p.getLastName())).collect(Collectors.toList());
+        assertEquals(injectedData, convertedActual);
     }
 
     @Test
@@ -85,24 +88,25 @@ class PersonControllerIntegrationTest {
     @Test
     @Transactional
     void getByLastName_success() throws Exception {
-        List<PersonDto> injectedData = prepareInjectData();
+        List<PersonAddDto> injectedData = prepareInjectData();
         injectedData.forEach(underTest::addPerson);
         ObjectMapper mapper = new ObjectMapper();
 
-        PersonDto expected = injectedData.get(0);
+        PersonAddDto expected = injectedData.get(0);
         MvcResult result = mockMvc
                 .perform(get(String.format(ApiVersionPathConstants.V1 + "/person/%s", expected.getLastName())))
                 .andDo(print())
                 .andReturn();
 
-        PersonDto actual = mapper.readValue(result.getResponse().getContentAsString(), PersonDto.class);
-        assertEquals(expected, actual);
+        PersonResponseDto actual = mapper.readValue(result.getResponse().getContentAsString(), PersonResponseDto.class);
+        PersonAddDto convertedActual = new PersonAddDto(actual.getFirstName(), actual.getLastName());
+        assertEquals(expected, convertedActual);
     }
 
     @Test
     @Transactional
     void getByLastName_noResult() throws Exception {
-        List<PersonDto> injectedData = prepareInjectData();
+        List<PersonAddDto> injectedData = prepareInjectData();
         injectedData.forEach(underTest::addPerson);
 
         MvcResult result = mockMvc
@@ -118,7 +122,7 @@ class PersonControllerIntegrationTest {
     @Transactional
     void addPerson_success() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        PersonDto data = new PersonDto("test", "test1");
+        PersonAddDto data = new PersonAddDto("test", "test1");
         String jsonObject = mapper.writeValueAsString(data);
 
         MvcResult result = mockMvc
@@ -130,18 +134,19 @@ class PersonControllerIntegrationTest {
 
         assertEquals(HttpStatus.CREATED.value(), result.getResponse().getStatus());
 
-        PersonDto actual = mapper.readValue(result.getResponse().getContentAsString(), PersonDto.class);
-        assertEquals(data, actual);
+        PersonResponseDto actual = mapper.readValue(result.getResponse().getContentAsString(), PersonResponseDto.class);
+        PersonAddDto convertedActual = new PersonAddDto(actual.getFirstName(), actual.getLastName());
+        assertEquals(data, convertedActual);
     }
 
     @Test
     @Transactional
     void addPerson_alreadyExists() throws Exception {
-        List<PersonDto> injectedData = prepareInjectData();
+        List<PersonAddDto> injectedData = prepareInjectData();
         injectedData.forEach(underTest::addPerson);
 
         ObjectMapper mapper = new ObjectMapper();
-        PersonDto data = injectedData.get(0);
+        PersonAddDto data = injectedData.get(0);
         String jsonObject = mapper.writeValueAsString(data);
 
         MvcResult result = mockMvc

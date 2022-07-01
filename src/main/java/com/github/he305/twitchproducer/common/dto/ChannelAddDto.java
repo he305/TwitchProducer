@@ -13,5 +13,4 @@ import lombok.Setter;
 public class ChannelAddDto {
     private String nickname;
     private Platform platform;
-    private Long personId;
 }

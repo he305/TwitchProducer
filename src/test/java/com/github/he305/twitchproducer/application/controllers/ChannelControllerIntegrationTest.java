@@ -3,7 +3,8 @@ package com.github.he305.twitchproducer.application.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
 import com.github.he305.twitchproducer.application.dto.ChannelListDto;
-import com.github.he305.twitchproducer.common.dto.PersonDto;
+import com.github.he305.twitchproducer.common.dto.PersonAddDto;
+import com.github.he305.twitchproducer.common.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.dto.ChannelAddDto;
 import com.github.he305.twitchproducer.common.dto.ChannelResponseDto;
 import com.github.he305.twitchproducer.common.entities.Platform;
@@ -48,8 +49,6 @@ class ChannelControllerIntegrationTest {
                 .withPassword("sa");
         sqlContainer.start();
     }
-
-    private int counter = 0;
     @Autowired
     private MockMvc mockMvc;
 
@@ -60,36 +59,21 @@ class ChannelControllerIntegrationTest {
 
     @BeforeAll
     void setUp() {
-        injectPersonData();
+        //injectPersonData();
     }
 
     void injectPersonData() {
-        PersonDto personDto = new PersonDto("testName", "testLastName");
-        personController.addPerson(personDto);
+        PersonAddDto personResponseDto = new PersonAddDto("testName", "testLastName");
+        personController.addPerson(personResponseDto);
+    }
+
+    Long getPersonId() {
+        return personController.getAllPersons().getPersons().get(0).getId();
     }
 
     @Test
     void controllerIsNotNull() {
         assertNotNull(channelController);
-    }
-
-    @Test
-    @Transactional
-    void addChannel() throws Exception {
-        ChannelAddDto bodyDto = new ChannelAddDto("test", Platform.TWITCH, 1L);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonObject = objectMapper.writeValueAsString(bodyDto);
-
-        MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + "/channel")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonObject))
-                .andDo(print())
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        ChannelResponseDto actual = objectMapper.readValue(content, ChannelResponseDto.class);
-        assertEquals(bodyDto.getNickname(), actual.getNickname());
     }
 
     @Test
@@ -107,8 +91,8 @@ class ChannelControllerIntegrationTest {
         assertTrue(list.getChannels().isEmpty());
     }
 
-    @Transactional
     private List<String> injectSomeData() {
+        injectPersonData();
         List<String> nicknames = List.of(
                 "test1",
                 "test2",
@@ -116,22 +100,123 @@ class ChannelControllerIntegrationTest {
         );
 
         List<ChannelAddDto> requests = nicknames.stream()
-                .map(nick -> new ChannelAddDto(nick, Platform.TWITCH, 1L))
+                .map(nick -> new ChannelAddDto(nick, Platform.TWITCH))
                 .collect(Collectors.toList());
-        requests.forEach(channelController::addChannel);
+        Long id = personController.getAllPersons().getPersons().get(0).getId();
+        requests.forEach(r -> channelController.addChannel(id, r));
         return nicknames;
     }
 
     @Test
     @Transactional
-    void addChannel_existed() throws Exception {
+    void getPersonChannelByName_notFoundPerson() throws Exception {
         List<String> nicknames = injectSomeData();
-        ChannelAddDto data = new ChannelAddDto(nicknames.get(0), Platform.TWITCH, 0L);
+        Long id = getPersonId();
+        Long dataId = 99999L;
+        assertNotEquals(id, dataId);
+        String dataNickname = nicknames.get(0);
+        assertTrue(nicknames.contains(dataNickname));
+
+        mockMvc.perform(get(ApiVersionPathConstants.V1 + String.format("/person/%d/channel/%s", dataId, dataNickname)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
+    @Transactional
+    void getPersonChannelByName_notFoundNickname() throws Exception {
+        List<String> nicknames = injectSomeData();
+        Long dataId = getPersonId();
+        String dataNickname = "1312312";
+        assertFalse(nicknames.contains(dataNickname));
+
+        mockMvc.perform(get(ApiVersionPathConstants.V1 + String.format("/person/%d/channel/%s", dataId, dataNickname)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
+    @Transactional
+    void getPersonChannelByName_valid() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<String> nicknames = injectSomeData();
+        Long dataId = getPersonId();
+        String dataNickname = nicknames.get(0);
+
+        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + String.format("/person/%d/channel/%s", dataId, dataNickname)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        ChannelResponseDto actual = objectMapper.readValue(content, ChannelResponseDto.class);
+        assertEquals(dataNickname, actual.getNickname());
+    }
+
+    @Test
+    @Transactional
+    void addChannel_valid() throws Exception {
+        ChannelAddDto bodyDto = new ChannelAddDto("test", Platform.TWITCH);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonObject = objectMapper.writeValueAsString(bodyDto);
+
+        injectPersonData();
+        Long id = getPersonId();
+        MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/person/%d/channel", id))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        ChannelResponseDto actual = objectMapper.readValue(content, ChannelResponseDto.class);
+        assertEquals(bodyDto.getNickname(), actual.getNickname());
+    }
+
+    @Test
+    @Transactional
+    void addChannel_existingChannel() throws Exception {
+        List<String> nicknames = injectSomeData();
+        ChannelAddDto data = new ChannelAddDto(nicknames.get(0), Platform.TWITCH);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonObject = objectMapper.writeValueAsString(data);
-        counter++;
 
-        mockMvc.perform(post(ApiVersionPathConstants.V1 + "/channel")
+        Long id = getPersonId();
+        mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/person/%d/channel", id))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    void addChannel_emptyNickname() throws Exception {
+        List<String> nicknames = injectSomeData();
+        ChannelAddDto data = new ChannelAddDto("", Platform.TWITCH);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonObject = objectMapper.writeValueAsString(data);
+
+        Long id = getPersonId();
+        mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/person/%d/channel", id))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    void addChannel_notFoundPerson() throws Exception {
+        List<String> nicknames = injectSomeData();
+        ChannelAddDto data = new ChannelAddDto(nicknames.get(0), Platform.TWITCH);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonObject = objectMapper.writeValueAsString(data);
+
+        mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/person/%d/channel", 999999L))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
                 .andDo(print())
