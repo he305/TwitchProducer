@@ -14,7 +14,6 @@ import com.github.he305.twitchproducer.common.service.ChannelService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,7 +67,7 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public ChannelResponseDto addChannel(@NonNull Long personId, @NotNull ChannelAddDto channelAddDto) {
+    public ChannelResponseDto addChannel(@NonNull Long personId, @NonNull ChannelAddDto channelAddDto) {
         if (channelAddDto.getNickname().isEmpty())
             throw new IllegalArgumentException();
 
