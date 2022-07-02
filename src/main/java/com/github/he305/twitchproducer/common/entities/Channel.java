@@ -15,7 +15,7 @@ public class Channel extends AuditModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "nickname", unique = true, nullable = false)
+    @Column(name = "nickname", nullable = false)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
