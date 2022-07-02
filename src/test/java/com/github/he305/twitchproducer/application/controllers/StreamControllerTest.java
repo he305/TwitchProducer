@@ -1,7 +1,9 @@
 package com.github.he305.twitchproducer.application.controllers;
 
 import com.github.he305.twitchproducer.application.dto.StreamListDto;
+import com.github.he305.twitchproducer.common.dto.StreamAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
+import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.service.StreamService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,6 +72,24 @@ class StreamControllerTest {
         StreamResponseDto expected = new StreamResponseDto();
         Mockito.when(streamService.getStreamById(Mockito.anyLong())).thenReturn(Optional.of(expected));
         ResponseEntity<StreamResponseDto> actual = underTest.getStreamById(0L);
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    void addStream_channelNotFound() {
+        StreamAddDto dto = new StreamAddDto();
+        Mockito.when(streamService.addStream(0L, dto)).thenThrow(EntityNotFoundException.class);
+        ResponseEntity<StreamResponseDto> actual = underTest.addStream(0L, dto);
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
+    }
+
+    @Test
+    void addStream_valid() {
+        StreamAddDto dto = new StreamAddDto();
+        StreamResponseDto expected = new StreamResponseDto();
+        Mockito.when(streamService.addStream(0L, dto)).thenReturn(expected);
+        ResponseEntity<StreamResponseDto> actual = underTest.addStream(0L, dto);
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }

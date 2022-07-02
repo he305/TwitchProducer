@@ -1,10 +1,14 @@
 package com.github.he305.twitchproducer.application.services;
 
+import com.github.he305.twitchproducer.application.repositories.ChannelRepository;
 import com.github.he305.twitchproducer.application.repositories.StreamRepository;
+import com.github.he305.twitchproducer.common.dto.StreamAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
+import com.github.he305.twitchproducer.common.entities.Channel;
 import com.github.he305.twitchproducer.common.entities.Stream;
+import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
+import com.github.he305.twitchproducer.common.mapper.StreamAddMapper;
 import com.github.he305.twitchproducer.common.mapper.StreamResponseMapper;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +29,16 @@ class StreamServiceImplTest {
     @Mock
     private StreamRepository repository;
     @Mock
+    private ChannelRepository channelRepository;
+    @Mock
     private StreamResponseMapper responseMapper;
+    @Mock
+    private StreamAddMapper addMapper;
     private StreamServiceImpl underTest;
+
     @BeforeEach
     void setUp() {
-        underTest = new StreamServiceImpl(repository, responseMapper);
+        underTest = new StreamServiceImpl(repository, channelRepository, responseMapper, addMapper);
     }
 
     List<Stream> getData() {
@@ -40,21 +49,24 @@ class StreamServiceImplTest {
                         time,
                         time,
                         1,
-                        Collections.emptyList()
+                        Collections.emptyList(),
+                        null
                 ),
                 new Stream(
                         1L,
                         time,
                         null,
                         2,
-                        Collections.emptyList()
+                        Collections.emptyList(),
+                        null
                 ),
                 new Stream(
                         2L,
                         time,
                         time,
                         3,
-                        Collections.emptyList()
+                        Collections.emptyList(),
+                        null
                 )
         );
     }
@@ -93,5 +105,23 @@ class StreamServiceImplTest {
         Optional<StreamResponseDto> actual = underTest.getStreamById(0L);
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
+    }
+
+    @Test
+    void addStream_NotFound() {
+        Mockito.when(channelRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        StreamAddDto dto = new StreamAddDto();
+        assertThrows(EntityNotFoundException.class, () ->
+                underTest.addStream(0L, dto));
+    }
+
+    @Test
+    void addStream_valid() {
+        Mockito.when(channelRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new Channel()));
+        StreamAddDto dto = new StreamAddDto();
+        Mockito.when(addMapper.toStream(dto)).thenReturn(new Stream());
+        Mockito.when(responseMapper.toDto(Mockito.any())).thenReturn(new StreamResponseDto());
+        assertDoesNotThrow(() ->
+                underTest.addStream(0L, dto));
     }
 }

@@ -1,9 +1,13 @@
 package com.github.he305.twitchproducer.application.services;
 
+import com.github.he305.twitchproducer.application.repositories.ChannelRepository;
 import com.github.he305.twitchproducer.application.repositories.StreamRepository;
 import com.github.he305.twitchproducer.common.dto.StreamAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
+import com.github.he305.twitchproducer.common.entities.Channel;
 import com.github.he305.twitchproducer.common.entities.Stream;
+import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
+import com.github.he305.twitchproducer.common.mapper.StreamAddMapper;
 import com.github.he305.twitchproducer.common.mapper.StreamResponseMapper;
 import com.github.he305.twitchproducer.common.service.StreamService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +21,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StreamServiceImpl implements StreamService {
     private final StreamRepository streamRepository;
+    private final ChannelRepository channelRepository;
     private final StreamResponseMapper responseMapper;
+    private final StreamAddMapper addMapper;
 
     @Override
     public List<StreamResponseDto> getAllStreams() {
@@ -33,12 +39,18 @@ public class StreamServiceImpl implements StreamService {
                 .filter(s -> s.getEndedAt() == null)
                 .map(responseMapper::toDto)
                 .collect(Collectors.toList());
-
     }
 
     @Override
-    public StreamResponseDto addStream(StreamAddDto dto) {
-        return new StreamResponseDto();
+    public StreamResponseDto addStream(Long channelId, StreamAddDto dto) {
+        Optional<Channel> channel = channelRepository.findById(channelId);
+        if (channel.isEmpty())
+            throw new EntityNotFoundException();
+
+        Stream stream = addMapper.toStream(dto);
+        stream.setChannel(channel.get());
+        Stream saved = streamRepository.save(stream);
+        return responseMapper.toDto(saved);
     }
 
     @Override

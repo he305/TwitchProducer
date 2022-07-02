@@ -34,6 +34,10 @@ public class Stream extends AuditModel {
     @JoinColumn(name = "stream_id")
     private List<StreamData> streamData = new ArrayList<>();
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "channel_id", referencedColumnName = "id", nullable = false)
+    private Channel channel;
+
     public void addStreamData(StreamData data) {
         streamData.add(data);
     }

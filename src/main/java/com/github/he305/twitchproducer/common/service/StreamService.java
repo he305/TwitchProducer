@@ -11,7 +11,7 @@ public interface StreamService {
 
     List<StreamResponseDto> getCurrentStreams();
 
-    StreamResponseDto addStream(StreamAddDto dto);
+    StreamResponseDto addStream(Long channelId, StreamAddDto dto);
 
     Optional<StreamResponseDto> getStreamById(Long id);
 }

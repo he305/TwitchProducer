@@ -2,15 +2,14 @@ package com.github.he305.twitchproducer.application.controllers;
 
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
 import com.github.he305.twitchproducer.application.dto.StreamListDto;
+import com.github.he305.twitchproducer.common.dto.StreamAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
+import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.service.StreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -25,16 +24,26 @@ public class StreamController {
         return new StreamListDto(streamService.getAllStreams());
     }
 
-    @GetMapping("/streams/current")
+    @GetMapping("/stream/current")
     public StreamListDto getCurrentStreams() {
         return new StreamListDto(streamService.getCurrentStreams());
     }
 
-    @GetMapping("/streams/{streamId}")
+    @GetMapping("/stream/{streamId}")
     public ResponseEntity<StreamResponseDto> getStreamById(@PathVariable Long streamId) {
         Optional<StreamResponseDto> response = streamService.getStreamById(streamId);
         if (response.isEmpty())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(response.get(), HttpStatus.OK);
+    }
+
+    @PostMapping("/channel/{channelId}/stream")
+    public ResponseEntity<StreamResponseDto> addStream(@PathVariable Long channelId, @RequestBody StreamAddDto dto) {
+        try {
+            StreamResponseDto response = streamService.addStream(channelId, dto);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

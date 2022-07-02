@@ -38,7 +38,8 @@ class StreamResponseMapperImplTest {
                 time,
                 time,
                 322,
-                new ArrayList<>()
+                new ArrayList<>(),
+                null
         );
         StreamData data = new StreamData(
                 999L,
