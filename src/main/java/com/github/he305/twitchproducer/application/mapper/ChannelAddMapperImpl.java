@@ -5,6 +5,8 @@ import com.github.he305.twitchproducer.common.entities.Channel;
 import com.github.he305.twitchproducer.common.mapper.ChannelAddMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+
 @Component
 public class ChannelAddMapperImpl implements ChannelAddMapper {
     @Override
@@ -13,7 +15,8 @@ public class ChannelAddMapperImpl implements ChannelAddMapper {
                 null,
                 dto.getNickname(),
                 dto.getPlatform(),
-                null
+                null,
+                Collections.emptyList()
         );
     }
 }

@@ -53,6 +53,14 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
+    public Optional<ChannelResponseDto> getChannelById(@NonNull Long id) {
+        Optional<Channel> channel = channelRepository.findById(id);
+        if (channel.isEmpty())
+            return Optional.empty();
+        return Optional.ofNullable(channelResponseMapper.toDto(channel.get()));
+    }
+
+    @Override
     public Optional<ChannelResponseDto> getPersonChannelByName(@NonNull Long personId, @NonNull String channelName) {
         Optional<Channel> channel = channelRepository
                 .findByNickname(channelName)

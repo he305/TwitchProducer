@@ -250,7 +250,7 @@ class ChannelControllerIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         String expected = nicknames.get(0);
 
-        MvcResult result = mockMvc.perform(get(String.format(ApiVersionPathConstants.V1 + "/channel/%s", expected)))
+        MvcResult result = mockMvc.perform(get(String.format(ApiVersionPathConstants.V1 + "/channel/name//%s", expected)))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
@@ -266,11 +266,13 @@ class ChannelControllerIntegrationTest {
         ChannelResponseDto expected = new ChannelResponseDto();
         ObjectMapper mapper = new ObjectMapper();
 
-        mockMvc.perform(get(ApiVersionPathConstants.V1 + "/channel/test"))
+        mockMvc.perform(get(ApiVersionPathConstants.V1 + "/channel/name/test"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andReturn();
     }
+
+    // TODO: write tests for getById
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {

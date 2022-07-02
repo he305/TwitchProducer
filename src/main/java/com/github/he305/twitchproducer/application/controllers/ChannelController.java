@@ -27,9 +27,18 @@ public class ChannelController {
         return new ChannelListDto(channelService.getAllChannels());
     }
 
-    @GetMapping("/channel/{nickname}")
+    @GetMapping("/channel/name/{nickname}")
     public ResponseEntity<ChannelResponseDto> getByName(@PathVariable String nickname) {
         Optional<ChannelResponseDto> channel = channelService.getChannelByName(nickname);
+        if (channel.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(channel.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("/channel/id/{channelId}")
+    public ResponseEntity<ChannelResponseDto> getById(@PathVariable Long channelId) {
+        Optional<ChannelResponseDto> channel = channelService.getChannelById(channelId);
         if (channel.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

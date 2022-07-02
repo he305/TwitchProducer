@@ -61,6 +61,25 @@ class ChannelControllerTest {
     }
 
     @Test
+    void getById_someData() {
+        Long data = 0L;
+        ChannelResponseDto expected = new ChannelResponseDto(0L, "1", Platform.TWITCH, null);
+        Mockito.when(channelService.getChannelById(data)).thenReturn(Optional.of(expected));
+        ResponseEntity<ChannelResponseDto> actual = underTest.getById(data);
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    void getById_noData() {
+        Long data = 0L;
+        Mockito.when(channelService.getChannelById(data)).thenReturn(Optional.empty());
+
+        ResponseEntity<ChannelResponseDto> actual = underTest.getById(data);
+        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
+    }
+
+    @Test
     void getPersonChannelByName_found() {
         String nickname = "";
         ChannelResponseDto expected = new ChannelResponseDto(0L, "", Platform.TWITCH, "");
