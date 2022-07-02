@@ -1,9 +1,6 @@
 package com.github.he305.twitchproducer.common.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class Stream extends AuditModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
