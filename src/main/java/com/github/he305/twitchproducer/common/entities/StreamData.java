@@ -1,30 +1,32 @@
 package com.github.he305.twitchproducer.common.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import javax.persistence.*;
 
-@Data
+@Entity
+@Table(name = "stream_data")
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class StreamData {
+@Getter
+@Setter
+@EqualsAndHashCode
+public class StreamData extends AuditModel {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private Boolean isLive;
+    @Column(name = "game_name", nullable = false, length = 100)
     private String gameName;
-    private String title;
-    private Integer viewerCount;
-    private LocalDateTime startedAt;
 
-    public static StreamData emptyStream() {
-        return StreamData.builder()
-                .isLive(false)
-                .gameName("")
-                .title("")
-                .viewerCount(0)
-                .startedAt(LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC))
-                .build();
-    }
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "viewer_count", nullable = false)
+    private Integer viewerCount;
+
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "stream_id", referencedColumnName = "id", nullable = false)
+    private Stream stream;
 }

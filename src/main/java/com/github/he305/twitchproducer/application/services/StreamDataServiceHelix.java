@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 @Service
@@ -34,15 +32,14 @@ public class StreamDataServiceHelix implements StreamDataService {
     private StreamData buildFullStream(com.github.twitch4j.helix.domain.Stream rawStream) {
         return StreamData.builder()
                 .gameName(rawStream.getGameName())
-                .startedAt(LocalDateTime.ofInstant(rawStream.getStartedAtInstant(), ZoneOffset.UTC))
                 .title(rawStream.getTitle())
                 .viewerCount(rawStream.getViewerCount())
-                .isLive(true)
                 .build();
+
     }
 
     private StreamData buildEmptyStream() {
-        return StreamData.emptyStream();
+        return new StreamData();
     }
 
 }

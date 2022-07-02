@@ -29,9 +29,9 @@ class StreamDataControllerTest {
     @Test
     void getStream_noStreamData() {
         String data = "";
-        StreamData expected = StreamData.emptyStream();
+        StreamData expected = new StreamData();
 
-        Mockito.when(streamDataService.getStream(data)).thenReturn(StreamData.emptyStream());
+        Mockito.when(streamDataService.getStream(data)).thenReturn(expected);
         StreamData actual = underTest.getStream("");
 
         assertEquals(expected, actual);
@@ -42,8 +42,6 @@ class StreamDataControllerTest {
         String data = "";
         StreamData expected = StreamData.builder()
                 .gameName("gameName")
-                .isLive(true)
-                .startedAt(LocalDateTime.ofEpochSecond(1, 1, ZoneOffset.UTC))
                 .title("title")
                 .viewerCount(0)
                 .build();

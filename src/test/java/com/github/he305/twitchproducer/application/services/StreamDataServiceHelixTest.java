@@ -68,34 +68,9 @@ class StreamDataServiceHelixTest {
         ).execute().getStreams()).thenReturn(List.of());
 //        Mockito.when(hystrixCommand.execute().getStreams()).thenReturn(List.of());
 
-        StreamData expected = StreamData.emptyStream();
+        StreamData expected = new StreamData();
 
         StreamData actual = underTest.getStream(nickname);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void getStream_hasValidEntry() {
-        String nickname = "";
-        com.github.twitch4j.helix.domain.Stream validStream = getValidStream();
-
-        Mockito.when(twitchClient.getStreams(
-                null, null, null, 100, null, null, null,
-                List.of(nickname)
-
-        ).execute().getStreams()).thenReturn(List.of(
-                validStream
-        ));
-        StreamData expected = new StreamData(
-                true,
-                "gameName",
-                "title",
-                0,
-                LocalDateTime.of(1970, 1, 1, 0, 0, 0, 0)
-        );
-
-        StreamData actual = underTest.getStream(nickname);
-
         assertEquals(expected, actual);
     }
 }
