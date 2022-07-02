@@ -1,0 +1,10 @@
+ALTER TABLE stream
+ADD COLUMN created_at TIMESTAMP NOT NULL,
+ADD COLUMN updated_at TIMESTAMP NOT NULL,
+ADD COLUMN channel_id SERIAL REFERENCES channel (id);
+
+ALTER TABLE
+  stream RENAME COLUMN end_at TO ended_at;
+
+ALTER TABLE stream_data
+ADD COLUMN updated_at TIMESTAMP NOT NULL;
