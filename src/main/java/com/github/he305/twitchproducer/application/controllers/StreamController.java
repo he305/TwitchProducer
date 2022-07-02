@@ -1,6 +1,7 @@
 package com.github.he305.twitchproducer.application.controllers;
 
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
+import com.github.he305.twitchproducer.application.dto.StreamEndRequest;
 import com.github.he305.twitchproducer.application.dto.StreamListDto;
 import com.github.he305.twitchproducer.common.dto.StreamAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
@@ -41,6 +42,16 @@ public class StreamController {
     public ResponseEntity<StreamResponseDto> addStream(@PathVariable Long channelId, @RequestBody StreamAddDto dto) {
         try {
             StreamResponseDto response = streamService.addStream(channelId, dto);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/stream/{streamId}/end")
+    public ResponseEntity<StreamResponseDto> endStream(@PathVariable Long streamId, @RequestBody StreamEndRequest req) {
+        try {
+            StreamResponseDto response = streamService.endStream(streamId, req.getTime());
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

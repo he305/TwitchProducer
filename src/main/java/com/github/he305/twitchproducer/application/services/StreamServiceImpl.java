@@ -13,6 +13,7 @@ import com.github.he305.twitchproducer.common.service.StreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -59,5 +60,17 @@ public class StreamServiceImpl implements StreamService {
         if (stream.isEmpty())
             return Optional.empty();
         return Optional.of(responseMapper.toDto(stream.get()));
+    }
+
+    @Override
+    public StreamResponseDto endStream(Long streamId, LocalDateTime endTime) {
+        Optional<Stream> stream = streamRepository.findById(streamId);
+        if (stream.isEmpty())
+            throw new EntityNotFoundException();
+
+        Stream endedStream = stream.get();
+        endedStream.setEndedAt(endTime);
+        Stream saved = streamRepository.save(endedStream);
+        return responseMapper.toDto(saved);
     }
 }
