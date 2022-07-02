@@ -92,6 +92,12 @@ class ChannelServiceImplTest {
     }
 
     @Test
+    void getChannelById_nullId() {
+        assertThrows(NullPointerException.class, () ->
+                underTest.getChannelById(null));
+    }
+
+    @Test
     void getAllChannels_emptyList() {
         List<ChannelResponseDto> expected = Collections.emptyList();
         Mockito.when(channelRepository.findAll()).thenReturn(Collections.emptyList());
