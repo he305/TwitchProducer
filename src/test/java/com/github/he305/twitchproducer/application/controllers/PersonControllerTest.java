@@ -4,6 +4,7 @@ import com.github.he305.twitchproducer.application.dto.PersonDtoListDto;
 import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
+import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.service.PersonService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PersonControllerTest {
@@ -78,5 +80,42 @@ class PersonControllerTest {
         Mockito.when(personService.addPerson(Mockito.any())).thenThrow(EntityExistsException.class);
         ResponseEntity<PersonResponseDto> actual = underTest.addPerson(data);
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
+    }
+
+    @Test
+    void deletePerson_notFound() {
+        doThrow(new EntityNotFoundException()).when(personService).deletePerson(Mockito.anyLong());
+        ResponseEntity<String> actual = underTest.deletePerson(0L);
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
+    }
+
+    @Test
+    void deletePerson_success() {
+        doNothing().when(personService).deletePerson(Mockito.anyLong());
+        ResponseEntity<String> actual = underTest.deletePerson(0L);
+        assertEquals(HttpStatus.NO_CONTENT, actual.getStatusCode());
+    }
+
+    @Test
+    void updatePerson_notFound() {
+        PersonAddDto dto = new PersonAddDto();
+        doThrow(new EntityNotFoundException()).when(personService).updatePerson(0L, dto);
+        ResponseEntity<PersonResponseDto> actual = underTest.updatePerson(0L, dto);
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
+    }
+
+    @Test
+    void updatePerson_valid() {
+        PersonAddDto dto = new PersonAddDto();
+        PersonResponseDto expected = new PersonResponseDto(
+                0L,
+                "test",
+                "test",
+                null
+        );
+        doReturn(expected).when(personService).updatePerson(0L, dto);
+        ResponseEntity<PersonResponseDto> actual = underTest.updatePerson(0L, dto);
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
     }
 }

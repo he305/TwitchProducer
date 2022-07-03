@@ -5,6 +5,7 @@ import com.github.he305.twitchproducer.application.repositories.PersonRepository
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
+import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.mapper.PersonAddMapper;
 import com.github.he305.twitchproducer.common.mapper.PersonResponseMapper;
 import com.github.he305.twitchproducer.common.service.PersonService;
@@ -46,5 +47,25 @@ public class PersonServiceImpl implements PersonService {
         }
         personRepository.save(person);
         return responseMapper.getPersonDto(person);
+    }
+
+    @Override
+    public void deletePerson(Long personId) throws EntityNotFoundException {
+        Optional<Person> person = personRepository.findById(personId);
+        if (person.isEmpty())
+            throw new EntityNotFoundException();
+        personRepository.delete(person.get());
+    }
+
+    @Override
+    public PersonResponseDto updatePerson(Long personId, PersonAddDto dto) throws EntityNotFoundException {
+        Optional<Person> person = personRepository.findById(personId);
+        if (person.isEmpty())
+            throw new EntityNotFoundException();
+
+        Person personToUpdate = person.get();
+        personToUpdate.setFirstName(dto.getFirstName());
+        personToUpdate.setLastName(dto.getLastName());
+        return responseMapper.getPersonDto(personRepository.save(personToUpdate));
     }
 }

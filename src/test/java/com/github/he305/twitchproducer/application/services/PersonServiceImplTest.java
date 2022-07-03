@@ -5,6 +5,7 @@ import com.github.he305.twitchproducer.application.repositories.PersonRepository
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
+import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.mapper.PersonAddMapper;
 import com.github.he305.twitchproducer.common.mapper.PersonResponseMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,5 +89,58 @@ class PersonServiceImplTest {
 
         PersonAddDto data = new PersonAddDto();
         assertDoesNotThrow(() -> underTest.addPerson(data));
+    }
+
+    @Test
+    void deletePerson_notFound() {
+        Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () ->
+                underTest.deletePerson(0L));
+    }
+
+    @Test
+    void deletePerson_success() {
+        Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new Person()));
+        assertDoesNotThrow(() -> underTest.deletePerson(0L));
+    }
+
+    @Test
+    void updatePerson_notFound() {
+        PersonAddDto dto = new PersonAddDto();
+        Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () ->
+                underTest.updatePerson(0L, dto));
+    }
+
+    @Test
+    void updatePerson_success() {
+        PersonAddDto dto = new PersonAddDto(
+                "new",
+                "name"
+        );
+        Person existing = new Person(
+                0L,
+                "old",
+                "old",
+                null
+        );
+        Person changed = new Person(
+                0L,
+                "new",
+                "name",
+                null
+        );
+        PersonResponseDto expected = new PersonResponseDto(
+                0L,
+                "new",
+                "name",
+                null
+        );
+
+        Mockito.when(personRepository.findById(0L)).thenReturn(Optional.of(existing));
+        Mockito.when(personRepository.save(changed)).thenReturn(changed);
+        Mockito.when(personResponseMapper.getPersonDto(changed)).thenReturn(expected);
+        PersonResponseDto actual = underTest.updatePerson(0L, dto);
+        assertEquals(actual, expected);
     }
 }

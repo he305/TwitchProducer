@@ -5,6 +5,7 @@ import com.github.he305.twitchproducer.application.constants.ApiVersionPathConst
 import com.github.he305.twitchproducer.application.dto.PersonDtoListDto;
 import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,11 +25,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,19 +49,24 @@ class PersonControllerIntegrationTest {
     @Autowired
     private PersonController underTest;
 
-    private List<PersonAddDto> prepareInjectData() {
-        return List.of(
+    private List<PersonResponseDto> injectPerson() {
+        List<PersonAddDto> injected = List.of(
                 new PersonAddDto("test", "test1"),
                 new PersonAddDto("test2", "test3"),
                 new PersonAddDto("test4", "test5")
         );
+
+        return injected
+                .stream()
+                .map(p -> underTest.addPerson(p))
+                .map(HttpEntity::getBody)
+                .collect(Collectors.toList());
     }
 
     @Test
     @Transactional
     void getAll_existingData() throws Exception {
-        List<PersonAddDto> injectedData = prepareInjectData();
-        injectedData.forEach(underTest::addPerson);
+        List<PersonResponseDto> injectedData = injectPerson();
 
         ObjectMapper mapper = new ObjectMapper();
         MvcResult result = mockMvc
@@ -69,8 +75,7 @@ class PersonControllerIntegrationTest {
                 .andReturn();
 
         PersonDtoListDto actual = mapper.readValue(result.getResponse().getContentAsString(), PersonDtoListDto.class);
-        List<PersonAddDto> convertedActual = actual.getPersons().stream().map(p -> new PersonAddDto(p.getFirstName(), p.getLastName())).collect(Collectors.toList());
-        assertEquals(injectedData, convertedActual);
+        assertEquals(injectedData, actual.getPersons());
     }
 
     @Test
@@ -88,26 +93,23 @@ class PersonControllerIntegrationTest {
     @Test
     @Transactional
     void getByLastName_success() throws Exception {
-        List<PersonAddDto> injectedData = prepareInjectData();
-        injectedData.forEach(underTest::addPerson);
+        List<PersonResponseDto> injectedData = injectPerson();
         ObjectMapper mapper = new ObjectMapper();
 
-        PersonAddDto expected = injectedData.get(0);
+        PersonResponseDto expected = injectedData.get(0);
         MvcResult result = mockMvc
                 .perform(get(String.format(ApiVersionPathConstants.V1 + "/person/%s", expected.getLastName())))
                 .andDo(print())
                 .andReturn();
 
         PersonResponseDto actual = mapper.readValue(result.getResponse().getContentAsString(), PersonResponseDto.class);
-        PersonAddDto convertedActual = new PersonAddDto(actual.getFirstName(), actual.getLastName());
-        assertEquals(expected, convertedActual);
+        assertEquals(expected, actual);
     }
 
     @Test
     @Transactional
     void getByLastName_noResult() throws Exception {
-        List<PersonAddDto> injectedData = prepareInjectData();
-        injectedData.forEach(underTest::addPerson);
+        List<PersonResponseDto> injectedData = injectPerson();
 
         MvcResult result = mockMvc
                 .perform(get(String.format(ApiVersionPathConstants.V1 + "/person/%s", "not_exist")))
@@ -142,11 +144,10 @@ class PersonControllerIntegrationTest {
     @Test
     @Transactional
     void addPerson_alreadyExists() throws Exception {
-        List<PersonAddDto> injectedData = prepareInjectData();
-        injectedData.forEach(underTest::addPerson);
+        List<PersonResponseDto> injectedData = injectPerson();
 
         ObjectMapper mapper = new ObjectMapper();
-        PersonAddDto data = injectedData.get(0);
+        PersonResponseDto data = injectedData.get(0);
         String jsonObject = mapper.writeValueAsString(data);
 
         MvcResult result = mockMvc
@@ -157,6 +158,90 @@ class PersonControllerIntegrationTest {
                 .andReturn();
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void deletePerson_notFound() {
+        MvcResult result = mockMvc
+                .perform(delete(ApiVersionPathConstants.V1 + String.format("/person/%d", 99999L)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void deletePerson_success() {
+        List<PersonResponseDto> injected = injectPerson();
+        assertEquals(3, injected.size());
+        PersonResponseDto personToDelete = injected.get(0);
+        Long idToDelete = personToDelete.getId();
+
+        mockMvc.perform(delete(ApiVersionPathConstants.V1 + String.format("/person/%d", idToDelete)))
+                .andDo(print())
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        List<PersonResponseDto> existingPersons = underTest.getAllPersons().getPersons();
+        assertEquals(2, existingPersons.size());
+        assertFalse(existingPersons.contains(personToDelete));
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void updatePerson_notFound() {
+        PersonAddDto dto = new PersonAddDto(
+                "test",
+                "test"
+        );
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonObject = mapper.writeValueAsString(dto);
+
+        mockMvc.perform(put(ApiVersionPathConstants.V1 + String.format("/person/%d", 99999L))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void updatePerson_success() {
+        List<PersonResponseDto> injected = injectPerson();
+
+        PersonResponseDto existed = injected.get(0);
+        PersonAddDto dto = new PersonAddDto(
+                "newFirstName",
+                "newLastName"
+        );
+        PersonResponseDto expected = new PersonResponseDto(
+                existed.getId(),
+                dto.getFirstName(),
+                dto.getLastName(),
+                existed.getChannels()
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonObject = mapper.writeValueAsString(dto);
+
+        MvcResult result = mockMvc.perform(put(ApiVersionPathConstants.V1 + String.format("/person/%d", expected.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        PersonResponseDto actual = mapper.readValue(result.getResponse().getContentAsString(), PersonResponseDto.class);
+        assertEquals(expected, actual);
+        List<PersonResponseDto> existingPersons = underTest.getAllPersons().getPersons();
+        assertTrue(existingPersons.contains(actual));
+        assertFalse(existingPersons.contains(existed));
     }
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
