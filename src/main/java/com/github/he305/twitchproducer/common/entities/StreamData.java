@@ -3,6 +3,7 @@ package com.github.he305.twitchproducer.common.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "stream_data")
@@ -29,4 +30,7 @@ public class StreamData extends AuditModel {
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "stream_id", referencedColumnName = "id", nullable = false)
     private Stream stream;
+
+    @Column(name = "timeAt", nullable = false, columnDefinition = "TIMESTAMP")
+    private LocalDateTime timeAt;
 }

@@ -1,0 +1,2 @@
+ALTER TABLE stream_data
+ADD COLUMN time_at TIMESTAMP NOT NULL;

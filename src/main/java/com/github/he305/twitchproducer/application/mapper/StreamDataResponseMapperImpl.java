@@ -15,7 +15,7 @@ public class StreamDataResponseMapperImpl implements StreamDataResponseMapper {
                 stream.getGameName(),
                 stream.getTitle(),
                 stream.getViewerCount(),
-                stream.getCreatedAt()
+                stream.getTimeAt()
         );
     }
 }

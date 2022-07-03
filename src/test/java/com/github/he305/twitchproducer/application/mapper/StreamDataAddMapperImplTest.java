@@ -32,7 +32,8 @@ class StreamDataAddMapperImplTest {
                 "gameName",
                 "title",
                 322,
-                null
+                null,
+                time
         );
 
         StreamData actual = underTest.toStreamData(data);

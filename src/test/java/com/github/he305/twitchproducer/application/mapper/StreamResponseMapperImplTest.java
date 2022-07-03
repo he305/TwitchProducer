@@ -46,7 +46,8 @@ class StreamResponseMapperImplTest {
                 "some",
                 "title",
                 322,
-                stream
+                stream,
+                time
         );
         stream.addStreamData(data);
 

@@ -75,14 +75,16 @@ class StreamDataServiceImplTest {
                 "test",
                 "test",
                 0,
-                stream
+                stream,
+                time
         );
         StreamData saved = new StreamData(
                 0L,
                 "test",
                 "test",
                 0,
-                stream
+                stream,
+                time
         );
         StreamDataResponseDto responseDto = new StreamDataResponseDto(
                 0L,
@@ -125,21 +127,24 @@ class StreamDataServiceImplTest {
                         "test",
                         "test",
                         0,
-                        targetStream
+                        targetStream,
+                        time
                 ),
                 new StreamData(
                         1L,
                         "test",
                         "test",
                         0,
-                        wrongStream
+                        wrongStream,
+                        time
                 ),
                 new StreamData(
                         2L,
                         "test",
                         "test",
                         0,
-                        wrongStream
+                        wrongStream,
+                        time
                 )
         );
 

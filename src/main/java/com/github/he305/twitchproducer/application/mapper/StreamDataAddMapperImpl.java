@@ -14,7 +14,8 @@ public class StreamDataAddMapperImpl implements StreamDataAddMapper {
                 dto.getGameName(),
                 dto.getTitle(),
                 dto.getViewerCount(),
-                null
+                null,
+                dto.getTime()
         );
     }
 }

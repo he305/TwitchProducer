@@ -33,7 +33,8 @@ class StreamDataResponseMapperImplTest {
                 "some game",
                 "some title",
                 322,
-                null
+                null,
+                time
         );
         data.setCreatedAt(time);
 
@@ -56,6 +57,7 @@ class StreamDataResponseMapperImplTest {
                 "some game",
                 "some title",
                 322,
+                null,
                 null
         );
 
