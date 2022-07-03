@@ -7,6 +7,7 @@ import com.github.he305.twitchproducer.common.dto.StreamDataResponseDto;
 import com.github.he305.twitchproducer.common.entities.Stream;
 import com.github.he305.twitchproducer.common.entities.StreamData;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
+import com.github.he305.twitchproducer.common.exception.StreamHasEndedException;
 import com.github.he305.twitchproducer.common.mapper.StreamDataAddMapper;
 import com.github.he305.twitchproducer.common.mapper.StreamDataResponseMapper;
 import com.github.he305.twitchproducer.common.service.StreamDataService;
@@ -31,8 +32,12 @@ public class StreamDataServiceImpl implements StreamDataService {
         if (stream.isEmpty())
             throw new EntityNotFoundException();
 
+        Stream targetStream = stream.get();
+        if (targetStream.getEndedAt() != null)
+            throw new StreamHasEndedException();
+
         StreamData streamData = addMapper.toStreamData(dto);
-        streamData.setStream(stream.get());
+        streamData.setStream(targetStream);
         StreamData saved = streamDataRepository.save(streamData);
         return responseMapper.toDto(saved);
     }

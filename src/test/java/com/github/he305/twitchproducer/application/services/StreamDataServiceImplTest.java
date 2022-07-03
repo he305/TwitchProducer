@@ -7,6 +7,7 @@ import com.github.he305.twitchproducer.common.dto.StreamDataResponseDto;
 import com.github.he305.twitchproducer.common.entities.Stream;
 import com.github.he305.twitchproducer.common.entities.StreamData;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
+import com.github.he305.twitchproducer.common.exception.StreamHasEndedException;
 import com.github.he305.twitchproducer.common.mapper.StreamDataAddMapper;
 import com.github.he305.twitchproducer.common.mapper.StreamDataResponseMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,18 +45,26 @@ class StreamDataServiceImplTest {
 
     @Test
     void addStreamData_streamNotFound() {
-//        Optional<Stream> stream = streamRepository.findById(streamId);
-//        if (stream.isEmpty())
-//            throw new EntityNotFoundException();
-//
-//        StreamData streamData = addMapper.toStreamData(dto);
-//        streamData.setStream(stream.get());
-//        StreamData saved = streamDataRepository.save(streamData);
-//        return responseMapper.toDto(saved);
-
         Mockito.when(streamRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
         StreamDataAddDto data = new StreamDataAddDto();
         assertThrows(EntityNotFoundException.class, () ->
+                underTest.addStreamData(0L, data));
+    }
+
+    @Test
+    void addStreamData_streamHasEnded() {
+        Stream stream = new Stream(
+                0L,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                0,
+                null,
+                null
+        );
+
+        Mockito.when(streamRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(stream));
+        StreamDataAddDto data = new StreamDataAddDto();
+        assertThrows(StreamHasEndedException.class, () ->
                 underTest.addStreamData(0L, data));
     }
 

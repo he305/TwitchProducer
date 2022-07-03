@@ -4,6 +4,7 @@ import com.github.he305.twitchproducer.application.dto.StreamDataList;
 import com.github.he305.twitchproducer.common.dto.StreamDataAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamDataResponseDto;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
+import com.github.he305.twitchproducer.common.exception.StreamHasEndedException;
 import com.github.he305.twitchproducer.common.service.StreamDataService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,14 @@ class StreamDataControllerTest {
     void addStreamData_notFoundChannel() {
         StreamDataAddDto dto = new StreamDataAddDto();
         Mockito.when(streamDataService.addStreamData(0L, dto)).thenThrow(EntityNotFoundException.class);
+        ResponseEntity<StreamDataResponseDto> actual = underTest.addStreamData(0L, dto);
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
+    }
+
+    @Test
+    void addStreamData_streamHasEnded() {
+        StreamDataAddDto dto = new StreamDataAddDto();
+        Mockito.when(streamDataService.addStreamData(0L, dto)).thenThrow(StreamHasEndedException.class);
         ResponseEntity<StreamDataResponseDto> actual = underTest.addStreamData(0L, dto);
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
     }

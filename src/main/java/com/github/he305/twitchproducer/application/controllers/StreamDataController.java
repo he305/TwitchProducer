@@ -5,6 +5,7 @@ import com.github.he305.twitchproducer.application.dto.StreamDataList;
 import com.github.he305.twitchproducer.common.dto.StreamDataAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamDataResponseDto;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
+import com.github.he305.twitchproducer.common.exception.StreamHasEndedException;
 import com.github.he305.twitchproducer.common.service.StreamDataService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class StreamDataController {
         try {
             StreamDataResponseDto response = streamDataService.addStreamData(streamId, dto);
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | StreamHasEndedException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

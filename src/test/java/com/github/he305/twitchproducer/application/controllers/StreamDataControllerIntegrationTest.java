@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
 import com.github.he305.twitchproducer.application.dto.StreamDataList;
+import com.github.he305.twitchproducer.application.dto.StreamEndRequest;
 import com.github.he305.twitchproducer.common.dto.*;
 import com.github.he305.twitchproducer.common.entities.Platform;
 import lombok.SneakyThrows;
@@ -28,8 +29,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -111,12 +111,11 @@ class StreamDataControllerIntegrationTest {
                 new StreamDataAddDto("test", "title", 0, time.minusHours(2))
         );
 
-        List<StreamDataResponseDto> saved = dto
+        return dto
                 .stream()
                 .map(d -> underTest.addStreamData(streamId, d))
                 .map(HttpEntity::getBody)
                 .collect(Collectors.toList());
-        return saved;
     }
 
     @Test
@@ -156,6 +155,26 @@ class StreamDataControllerIntegrationTest {
         StreamDataAddDto dto = new StreamDataAddDto();
         String jsonObject = mapper.writeValueAsString(dto);
         mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/stream/%d/streamData", 99999L))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void addStreamData_streamHasEnded() {
+        injectStream();
+        Long streamId = getStreamId();
+        StreamResponseDto endedStream = streamController.endStream(streamId, new StreamEndRequest(LocalDateTime.now())).getBody();
+        assertNotNull(endedStream);
+        assertNotNull(endedStream.getEndedAt());
+
+        StreamDataAddDto dto = new StreamDataAddDto();
+        String jsonObject = mapper.writeValueAsString(dto);
+        mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/stream/%d/streamData", streamId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
                 .andDo(print())
