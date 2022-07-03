@@ -79,7 +79,7 @@ class StreamControllerIntegrationTest {
         return channelController.getAll().getChannels().get(0).getId();
     }
 
-    List<StreamAddDto> injectStreamData() {
+    List<StreamResponseDto> injectStreamData() {
         injectChannel();
         LocalDateTime now = LocalDateTime.now();
         List<StreamAddDto> streams = List.of(
@@ -92,8 +92,8 @@ class StreamControllerIntegrationTest {
                 .map(s -> underTest.addStream(getChannelId(), s))
                 .map(HttpEntity::getBody)
                 .collect(Collectors.toList());
-        underTest.endStream(savedStreams.get(0).getId(), new StreamEndRequest(now));
-        return streams;
+        underTest.endStream(savedStreams.get(savedStreams.size() - 1).getId(), new StreamEndRequest(now));
+        return savedStreams;
     }
 
     @Test
@@ -117,7 +117,7 @@ class StreamControllerIntegrationTest {
     @Transactional
     @SneakyThrows
     void getAll_withResult() {
-        List<StreamAddDto> streams = injectStreamData();
+        List<StreamResponseDto> streams = injectStreamData();
         ObjectMapper mapper = JsonMapper.builder()
                 .findAndAddModules()
                 .build();
@@ -159,7 +159,7 @@ class StreamControllerIntegrationTest {
     @Transactional
     @SneakyThrows
     void getCurrent_withResult() {
-        List<StreamAddDto> streams = injectStreamData();
+        List<StreamResponseDto> streams = injectStreamData();
         ObjectMapper mapper = JsonMapper.builder()
                 .findAndAddModules()
                 .build();
@@ -173,6 +173,46 @@ class StreamControllerIntegrationTest {
         String content = result.getResponse().getContentAsString();
         StreamListDto actual = mapper.readValue(content, StreamListDto.class);
         assertEquals(expectedSize, actual.getStreams().size());
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void getStreamById_notFound() {
+        mockMvc.perform(get(ApiVersionPathConstants.V1 + String.format("/stream/%d", 0L)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void getStreamById_found() {
+        List<StreamResponseDto> streams = injectStreamData();
+        StreamResponseDto expected = streams.get(0);
+        ObjectMapper mapper = JsonMapper.builder()
+                .findAndAddModules()
+                .build();
+        MvcResult result = mockMvc.perform(get(ApiVersionPathConstants.V1 + String.format("/stream/%d", expected.getId())))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        StreamResponseDto actual = mapper.readValue(content, StreamResponseDto.class);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void getStreamById_notFoundWithData() {
+        List<StreamResponseDto> streams = injectStreamData();
+        mockMvc.perform(get(ApiVersionPathConstants.V1 + String.format("/stream/%d", 99999L)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andReturn();
     }
 
 
