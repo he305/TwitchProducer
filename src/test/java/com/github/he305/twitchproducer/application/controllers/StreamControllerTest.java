@@ -1,5 +1,6 @@
 package com.github.he305.twitchproducer.application.controllers;
 
+import com.github.he305.twitchproducer.application.dto.StreamEndRequest;
 import com.github.he305.twitchproducer.application.dto.StreamListDto;
 import com.github.he305.twitchproducer.common.dto.StreamAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,6 +92,26 @@ class StreamControllerTest {
         StreamResponseDto expected = new StreamResponseDto();
         Mockito.when(streamService.addStream(0L, dto)).thenReturn(expected);
         ResponseEntity<StreamResponseDto> actual = underTest.addStream(0L, dto);
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    void endStream_notFound() {
+        LocalDateTime time = LocalDateTime.now();
+        StreamEndRequest req = new StreamEndRequest(time);
+        Mockito.when(streamService.endStream(0L, time)).thenThrow(EntityNotFoundException.class);
+        ResponseEntity<StreamResponseDto> actual = underTest.endStream(0L, req);
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
+    }
+
+    @Test
+    void endStream_valid() {
+        LocalDateTime time = LocalDateTime.now();
+        StreamEndRequest req = new StreamEndRequest(time);
+        StreamResponseDto expected = new StreamResponseDto();
+        Mockito.when(streamService.endStream(0L, time)).thenReturn(expected);
+        ResponseEntity<StreamResponseDto> actual = underTest.endStream(0L, req);
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }

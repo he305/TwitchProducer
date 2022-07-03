@@ -124,4 +124,23 @@ class StreamServiceImplTest {
         assertDoesNotThrow(() ->
                 underTest.addStream(0L, dto));
     }
+
+    @Test
+    void endStream_notFound() {
+        Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        LocalDateTime now = LocalDateTime.now();
+        assertThrows(EntityNotFoundException.class, () ->
+                underTest.endStream(0L, now));
+    }
+
+    @Test
+    void endStream_valid() {
+        Stream stream = new Stream();
+        Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(stream));
+        LocalDateTime time = LocalDateTime.now();
+        Mockito.when(repository.save(Mockito.any())).thenReturn(new Stream());
+        Mockito.when(responseMapper.toDto(Mockito.any())).thenReturn(new StreamResponseDto());
+        assertDoesNotThrow(() ->
+                underTest.endStream(0L, time));
+    }
 }
