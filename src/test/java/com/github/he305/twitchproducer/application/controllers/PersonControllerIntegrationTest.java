@@ -166,8 +166,7 @@ class PersonControllerIntegrationTest {
     @Transactional
     @SneakyThrows
     void deletePerson_notFound() {
-        MvcResult result = mockMvc
-                .perform(delete(ApiVersionPathConstants.V1 + String.format("/person/%d", 99999L)))
+        mockMvc.perform(delete(ApiVersionPathConstants.V1 + String.format("/person/%d", 99999L)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andReturn();
