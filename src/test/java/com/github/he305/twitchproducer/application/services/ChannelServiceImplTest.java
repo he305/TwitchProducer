@@ -214,4 +214,59 @@ class ChannelServiceImplTest {
         ChannelResponseDto actual = underTest.addChannel(0L, data);
         assertEquals(expected, actual);
     }
+
+    @Test
+    void deleteChannel_notFound() {
+        Mockito.when(channelRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () ->
+                underTest.deleteChannel(0L));
+    }
+
+    @Test
+    void deletePerson_success() {
+        Mockito.when(channelRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new Channel()));
+        assertDoesNotThrow(() -> underTest.deleteChannel(0L));
+    }
+
+    @Test
+    void updateChannel_notFound() {
+        ChannelAddDto dto = new ChannelAddDto();
+        Mockito.when(channelRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () ->
+                underTest.updateChannel(0L, dto));
+    }
+
+    @Test
+    void updateChannel_success() {
+        ChannelAddDto dto = new ChannelAddDto(
+                "new",
+                Platform.GOODGAME
+        );
+        Channel existing = new Channel(
+                0L,
+                "old",
+                Platform.TWITCH,
+                null,
+                null
+        );
+        Channel changed = new Channel(
+                0L,
+                "new",
+                Platform.GOODGAME,
+                null,
+                null
+        );
+        ChannelResponseDto expected = new ChannelResponseDto(
+                0L,
+                "new",
+                Platform.GOODGAME,
+                ""
+        );
+
+        Mockito.when(channelRepository.findById(0L)).thenReturn(Optional.of(existing));
+        Mockito.when(channelRepository.save(changed)).thenReturn(changed);
+        Mockito.when(channelResponseMapper.toDto(changed)).thenReturn(expected);
+        ChannelResponseDto actual = underTest.updateChannel(0L, dto);
+        assertEquals(actual, expected);
+    }
 }

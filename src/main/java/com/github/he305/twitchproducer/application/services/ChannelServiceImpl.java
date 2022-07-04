@@ -91,4 +91,26 @@ public class ChannelServiceImpl implements ChannelService {
         Channel saved = channelRepository.save(channel);
         return channelResponseMapper.toDto(saved);
     }
+
+    @Override
+    public void deleteChannel(Long channelId) throws EntityNotFoundException {
+        Optional<Channel> channel = channelRepository.findById(channelId);
+        if (channel.isEmpty())
+            throw new EntityNotFoundException();
+
+        channelRepository.deleteById(channelId);
+    }
+
+    @Override
+    public ChannelResponseDto updateChannel(Long channelId, ChannelAddDto dto) throws EntityNotFoundException {
+        Optional<Channel> existingChannel = channelRepository.findById(channelId);
+        if (existingChannel.isEmpty())
+            throw new EntityNotFoundException();
+
+        Channel channelToUpdate = existingChannel.get();
+        channelToUpdate.setNickname(dto.getNickname());
+        channelToUpdate.setPlatform(dto.getPlatform());
+        Channel saved = channelRepository.save(channelToUpdate);
+        return channelResponseMapper.toDto(saved);
+    }
 }

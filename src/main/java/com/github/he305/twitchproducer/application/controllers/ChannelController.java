@@ -36,6 +36,26 @@ public class ChannelController {
         return new ResponseEntity<>(channel.get(), HttpStatus.OK);
     }
 
+    @DeleteMapping("/channel/{channelId}")
+    public ResponseEntity<String> deleteChannel(@PathVariable Long channelId) {
+        try {
+            channelService.deleteChannel(channelId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/channel/{channelId}")
+    public ResponseEntity<ChannelResponseDto> updateChannel(@PathVariable Long channelId, @RequestBody ChannelAddDto dto) {
+        try {
+            ChannelResponseDto res = channelService.updateChannel(channelId, dto);
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/channel/id/{channelId}")
     public ResponseEntity<ChannelResponseDto> getById(@PathVariable Long channelId) {
         Optional<ChannelResponseDto> channel = channelService.getChannelById(channelId);

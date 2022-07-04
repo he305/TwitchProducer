@@ -4,6 +4,7 @@ import com.github.he305.twitchproducer.application.dto.ChannelListDto;
 import com.github.he305.twitchproducer.common.dto.ChannelAddDto;
 import com.github.he305.twitchproducer.common.dto.ChannelResponseDto;
 import com.github.he305.twitchproducer.common.entities.Platform;
+import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.service.ChannelService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ChannelControllerTest {
@@ -119,5 +121,42 @@ class ChannelControllerTest {
 
         ResponseEntity<ChannelResponseDto> actual = underTest.addChannel(0L, data);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteChannel_notFound() {
+        doThrow(new EntityNotFoundException()).when(channelService).deleteChannel(Mockito.anyLong());
+        ResponseEntity<String> actual = underTest.deleteChannel(0L);
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
+    }
+
+    @Test
+    void deleteChannel_success() {
+        doNothing().when(channelService).deleteChannel(Mockito.anyLong());
+        ResponseEntity<String> actual = underTest.deleteChannel(0L);
+        assertEquals(HttpStatus.NO_CONTENT, actual.getStatusCode());
+    }
+
+    @Test
+    void updateChannel_notFound() {
+        ChannelAddDto dto = new ChannelAddDto();
+        doThrow(new EntityNotFoundException()).when(channelService).updateChannel(0L, dto);
+        ResponseEntity<ChannelResponseDto> actual = underTest.updateChannel(0L, dto);
+        assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
+    }
+
+    @Test
+    void updateChannel_valid() {
+        ChannelAddDto dto = new ChannelAddDto();
+        ChannelResponseDto expected = new ChannelResponseDto(
+                0L,
+                "test",
+                Platform.TWITCH,
+                ""
+        );
+        doReturn(expected).when(channelService).updateChannel(0L, dto);
+        ResponseEntity<ChannelResponseDto> actual = underTest.updateChannel(0L, dto);
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
     }
 }
