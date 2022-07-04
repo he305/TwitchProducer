@@ -92,13 +92,13 @@ class PersonControllerIntegrationTest {
 
     @Test
     @Transactional
-    void getByLastName_success() throws Exception {
+    void getById_success() throws Exception {
         List<PersonResponseDto> injectedData = injectPerson();
         ObjectMapper mapper = new ObjectMapper();
 
         PersonResponseDto expected = injectedData.get(0);
         MvcResult result = mockMvc
-                .perform(get(String.format(ApiVersionPathConstants.V1 + "/person/%s", expected.getLastName())))
+                .perform(get(String.format(ApiVersionPathConstants.V1 + "/person/%d", expected.getId())))
                 .andDo(print())
                 .andReturn();
 
@@ -108,11 +108,13 @@ class PersonControllerIntegrationTest {
 
     @Test
     @Transactional
-    void getByLastName_noResult() throws Exception {
+    void getById_noResult() throws Exception {
         List<PersonResponseDto> injectedData = injectPerson();
+        Long idToFind = 9999L;
+        injectedData.forEach(s -> assertNotEquals(s.getId(), idToFind));
 
         MvcResult result = mockMvc
-                .perform(get(String.format(ApiVersionPathConstants.V1 + "/person/%s", "not_exist")))
+                .perform(get(String.format(ApiVersionPathConstants.V1 + "/person/%d", idToFind)))
                 .andDo(print())
                 .andReturn();
 

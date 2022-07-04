@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface PersonService {
     List<PersonResponseDto> getAll();
 
-    Optional<PersonResponseDto> getPersonByLastName(String lastName);
+    Optional<PersonResponseDto> getPersonById(Long personId);
 
     PersonResponseDto addPerson(PersonAddDto personResponseDto) throws EntityExistsException;
 

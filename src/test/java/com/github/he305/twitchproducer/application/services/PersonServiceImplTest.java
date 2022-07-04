@@ -51,21 +51,21 @@ class PersonServiceImplTest {
     }
 
     @Test
-    void getPersonByLastName_existing() {
-        String data = "test";
+    void getPersonById_existing() {
+        Long personId = 0L;
         Mockito.when(personResponseMapper.getPersonDto(Mockito.any())).thenReturn(new PersonResponseDto());
-        Mockito.when(personRepository.findByLastName(Mockito.any())).thenReturn(Optional.of(new Person()));
+        Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new Person()));
 
-        Optional<PersonResponseDto> actual = underTest.getPersonByLastName(data);
+        Optional<PersonResponseDto> actual = underTest.getPersonById(personId);
         assertTrue(actual.isPresent());
     }
 
     @Test
-    void getPersonByLastName_nonExistent() {
-        String data = "test";
-        Mockito.when(personRepository.findByLastName(data)).thenReturn(Optional.empty());
+    void getPersonById_nonExistent() {
+        Long personId = 0L;
+        Mockito.when(personRepository.findById(personId)).thenReturn(Optional.empty());
 
-        Optional<PersonResponseDto> actual = underTest.getPersonByLastName(data);
+        Optional<PersonResponseDto> actual = underTest.getPersonById(personId);
         assertTrue(actual.isEmpty());
     }
 

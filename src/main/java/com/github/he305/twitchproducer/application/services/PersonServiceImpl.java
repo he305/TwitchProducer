@@ -31,8 +31,8 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Optional<PersonResponseDto> getPersonByLastName(String lastName) {
-        Optional<Person> person = personRepository.findByLastName(lastName);
+    public Optional<PersonResponseDto> getPersonById(Long personId) {
+        Optional<Person> person = personRepository.findById(personId);
         if (person.isEmpty()) {
             return Optional.empty();
         }

@@ -27,9 +27,9 @@ public class PersonController {
         return new PersonDtoListDto(personList);
     }
 
-    @GetMapping("/person/{lastName}")
-    public ResponseEntity<PersonResponseDto> getPersonByLastName(@PathVariable String lastName) {
-        Optional<PersonResponseDto> personDto = personService.getPersonByLastName(lastName);
+    @GetMapping("/person/{personId}")
+    public ResponseEntity<PersonResponseDto> getPersonById(@PathVariable Long personId) {
+        Optional<PersonResponseDto> personDto = personService.getPersonById(personId);
         return personDto
                 .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));

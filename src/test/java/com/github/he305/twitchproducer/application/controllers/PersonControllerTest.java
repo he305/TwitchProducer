@@ -48,10 +48,10 @@ class PersonControllerTest {
     }
 
     @Test
-    void getPersonByLastName_existingEntry() {
+    void getPersonById_existingEntry() {
         PersonResponseDto data = new PersonResponseDto(0L, "test1", "test2", null);
-        Mockito.when(personService.getPersonByLastName(Mockito.any())).thenReturn(Optional.of(data));
-        ResponseEntity<PersonResponseDto> actual = underTest.getPersonByLastName("");
+        Mockito.when(personService.getPersonById(Mockito.anyLong())).thenReturn(Optional.of(data));
+        ResponseEntity<PersonResponseDto> actual = underTest.getPersonById(0L);
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(data, actual.getBody());
     }
@@ -59,8 +59,8 @@ class PersonControllerTest {
     @Test
     void getPersonByLastName_notExistingEntry() {
         PersonResponseDto data = new PersonResponseDto(0L, "test1", "test2", null);
-        Mockito.when(personService.getPersonByLastName(Mockito.any())).thenReturn(Optional.empty());
-        ResponseEntity<PersonResponseDto> actual = underTest.getPersonByLastName("");
+        Mockito.when(personService.getPersonById(Mockito.anyLong())).thenReturn(Optional.empty());
+        ResponseEntity<PersonResponseDto> actual = underTest.getPersonById(0L);
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
     }
 
