@@ -42,9 +42,8 @@ class ChannelDaoImplTest {
     @Test
     void getChannelByName_notFound() {
         Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(List.of());
-        Optional<Channel> expected = Optional.empty();
-        Optional<Channel> actual = underTest.getChannelByName("test");
-        assertEquals(expected, actual);
+        List<Channel> actual = underTest.getChannelByName("test");
+        assertTrue(actual.isEmpty());
     }
 
     @Test
@@ -53,10 +52,10 @@ class ChannelDaoImplTest {
 
         Mockito.when(channelRepository.findByNickname(Mockito.any())).thenReturn(List.of(expected));
 
-        Optional<Channel> actual = underTest.getChannelByName("");
+        List<Channel> actual = underTest.getChannelByName("");
 
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
+        assertEquals(1, actual.size());
+        assertEquals(expected, actual.get(0));
     }
 
     @Test
@@ -89,6 +88,13 @@ class ChannelDaoImplTest {
     }
 
     @Test
+    void get_null() {
+        Long id = null;
+        assertThrows(NullPointerException.class, () ->
+                underTest.get(id));
+    }
+
+    @Test
     void save_shouldThrow() {
         Mockito.when(channelRepository.save(Mockito.any())).thenThrow(new DataAccessResourceFailureException("sad"));
         Channel data = new Channel();
@@ -104,6 +110,13 @@ class ChannelDaoImplTest {
     }
 
     @Test
+    void save_null() {
+        Channel data = null;
+        assertThrows(NullPointerException.class, () ->
+                underTest.save(data));
+    }
+
+    @Test
     void delete_notFound() {
         Channel data = new Channel();
         doThrow(new DataAccessResourceFailureException("sad")).when(channelRepository).delete(Mockito.any());
@@ -116,5 +129,12 @@ class ChannelDaoImplTest {
         Channel data = new Channel();
         doNothing().when(channelRepository).delete(Mockito.any());
         assertDoesNotThrow(() -> underTest.delete(data));
+    }
+
+    @Test
+    void delete_null() {
+        Channel data = null;
+        assertThrows(NullPointerException.class, () ->
+                underTest.delete(data));
     }
 }

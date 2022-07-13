@@ -60,6 +60,13 @@ class PersonDaoImplTest {
     }
 
     @Test
+    void get_null() {
+        Long id = null;
+        assertThrows(NullPointerException.class, () ->
+                underTest.get(id));
+    }
+
+    @Test
     void save_shouldThrow() {
         Mockito.when(personRepository.save(Mockito.any())).thenThrow(new DataAccessResourceFailureException("sad"));
         Person data = new Person();
@@ -75,6 +82,13 @@ class PersonDaoImplTest {
     }
 
     @Test
+    void save_null() {
+        Person data = null;
+        assertThrows(NullPointerException.class, () ->
+                underTest.save(data));
+    }
+
+    @Test
     void delete_notFound() {
         Person data = new Person();
         doThrow(new DataAccessResourceFailureException("sad")).when(personRepository).delete(Mockito.any());
@@ -86,6 +100,13 @@ class PersonDaoImplTest {
     void delete_success() {
         doNothing().when(personRepository).delete(Mockito.any());
         assertDoesNotThrow(() -> underTest.delete(new Person()));
+    }
+
+    @Test
+    void delete_null() {
+        Person data = null;
+        assertThrows(NullPointerException.class, () ->
+                underTest.delete(data));
     }
 
     @Test

@@ -5,6 +5,7 @@ import com.github.he305.twitchproducer.common.dao.PersonDao;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.exception.EntitySaveFailedException;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,17 +24,17 @@ public class PersonDaoImpl implements PersonDao {
     }
 
     @Override
-    public Optional<Person> get(Long personId) {
+    public Optional<Person> get(@NonNull Long personId) {
         return personRepository.findById(personId);
     }
 
     @Override
-    public void delete(Person person) throws EntityNotFoundException {
+    public void delete(@NonNull Person person) throws EntityNotFoundException {
         personRepository.delete(person);
     }
 
     @Override
-    public Person save(Person person) {
+    public Person save(@NonNull Person person) {
         try {
             return personRepository.save(person);
         } catch (RuntimeException e) {

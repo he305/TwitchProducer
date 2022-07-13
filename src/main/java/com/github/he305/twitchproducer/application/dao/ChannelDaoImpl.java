@@ -26,8 +26,8 @@ public class ChannelDaoImpl implements ChannelDao {
     }
 
     @Override
-    public Optional<Channel> getChannelByName(@NonNull String nickname) {
-        return channelRepository.findByNickname(nickname).stream().findFirst();
+    public List<Channel> getChannelByName(@NonNull String nickname) {
+        return channelRepository.findByNickname(nickname);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ChannelDaoImpl implements ChannelDao {
     }
 
     @Override
-    public void delete(Channel channel) {
+    public void delete(@NonNull Channel channel) {
         channelRepository.delete(channel);
     }
 }
