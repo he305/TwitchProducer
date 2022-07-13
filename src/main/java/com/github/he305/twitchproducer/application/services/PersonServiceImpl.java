@@ -40,8 +40,8 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public PersonResponseDto addPerson(PersonAddDto personResponseDto) {
-        Person person = addMapper.getPerson(personResponseDto);
+    public PersonResponseDto addPerson(PersonAddDto dto) {
+        Person person = addMapper.getPerson(dto);
         if (personRepository.findByLastName(person.getLastName()).isPresent()) {
             throw new EntityExistsException();
         }
@@ -52,9 +52,10 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public void deletePerson(Long personId) throws EntityNotFoundException {
         Optional<Person> person = personRepository.findById(personId);
-        if (person.isEmpty())
+        if (person.isEmpty()) {
             throw new EntityNotFoundException();
-        personRepository.delete(person.get());
+        }
+        personRepository.deleteById(personId);
     }
 
     @Override
