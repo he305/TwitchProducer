@@ -4,6 +4,7 @@ import com.github.he305.twitchproducer.application.repositories.PersonRepository
 import com.github.he305.twitchproducer.common.dao.PersonDao;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
+import com.github.he305.twitchproducer.common.exception.EntitySaveFailedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,11 @@ public class PersonDaoImpl implements PersonDao {
 
     @Override
     public Person save(Person person) {
-        return personRepository.save(person);
+        try {
+            return personRepository.save(person);
+        } catch (RuntimeException e) {
+            throw new EntitySaveFailedException(e.getMessage());
+        }
     }
 
     @Override

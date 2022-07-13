@@ -2,7 +2,7 @@ package com.github.he305.twitchproducer.common.service;
 
 import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
-import com.github.he305.twitchproducer.common.exception.EntityExistsException;
+import com.github.he305.twitchproducer.common.exception.EntityAlreadyExistsException;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public interface PersonService {
 
     Optional<PersonResponseDto> getPersonById(Long personId);
 
-    PersonResponseDto addPerson(PersonAddDto personResponseDto) throws EntityExistsException;
+    PersonResponseDto addPerson(PersonAddDto personResponseDto) throws EntityAlreadyExistsException;
 
     void deletePerson(Long personId) throws EntityNotFoundException;
 

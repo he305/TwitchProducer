@@ -3,7 +3,7 @@ package com.github.he305.twitchproducer.application.controllers;
 import com.github.he305.twitchproducer.application.dto.PersonDtoListDto;
 import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
-import com.github.he305.twitchproducer.common.exception.EntityExistsException;
+import com.github.he305.twitchproducer.common.exception.EntityAlreadyExistsException;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.service.PersonService;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,7 +77,7 @@ class PersonControllerTest {
     @Test
     void addPerson_alreadyExist() {
         PersonAddDto data = new PersonAddDto("test1", "test2");
-        Mockito.when(personService.addPerson(Mockito.any())).thenThrow(EntityExistsException.class);
+        Mockito.when(personService.addPerson(Mockito.any())).thenThrow(EntityAlreadyExistsException.class);
         ResponseEntity<PersonResponseDto> actual = underTest.addPerson(data);
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
     }

@@ -3,10 +3,10 @@ package com.github.he305.twitchproducer.application.service;
 import com.github.he305.twitchproducer.common.dao.ChannelDao;
 import com.github.he305.twitchproducer.common.dao.StreamDao;
 import com.github.he305.twitchproducer.common.dao.StreamDataDao;
-import com.github.he305.twitchproducer.common.dto.ChannelResponseDto;
 import com.github.he305.twitchproducer.common.dto.StreamAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamDataAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
+import com.github.he305.twitchproducer.common.entities.Channel;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.service.StreamService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class StreamServiceImpl implements StreamService {
 
     @Override
     public StreamResponseDto addStreamData(Long channelId, StreamDataAddDto dto) {
-        Optional<ChannelResponseDto> channel = channelDao.getChannelById(channelId);
+        Optional<Channel> channel = channelDao.get(channelId);
         if (channel.isEmpty())
             throw new EntityNotFoundException();
         List<StreamResponseDto> currentStreams = streamDao.getCurrentStreams();

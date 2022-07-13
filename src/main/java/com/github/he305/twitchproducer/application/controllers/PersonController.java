@@ -4,7 +4,7 @@ import com.github.he305.twitchproducer.application.constants.ApiVersionPathConst
 import com.github.he305.twitchproducer.application.dto.PersonDtoListDto;
 import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
-import com.github.he305.twitchproducer.common.exception.EntityExistsException;
+import com.github.he305.twitchproducer.common.exception.EntityAlreadyExistsException;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.service.PersonService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class PersonController {
         try {
             PersonResponseDto saved = personService.addPerson(personAddDto);
             return new ResponseEntity<>(saved, HttpStatus.CREATED);
-        } catch (EntityExistsException exception) {
+        } catch (EntityAlreadyExistsException exception) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

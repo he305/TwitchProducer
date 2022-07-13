@@ -4,7 +4,7 @@ import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.dao.PersonDao;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
 import com.github.he305.twitchproducer.common.entities.Person;
-import com.github.he305.twitchproducer.common.exception.EntityExistsException;
+import com.github.he305.twitchproducer.common.exception.EntityAlreadyExistsException;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.mapper.PersonAddMapper;
 import com.github.he305.twitchproducer.common.mapper.PersonResponseMapper;
@@ -42,7 +42,7 @@ public class PersonServiceImpl implements PersonService {
     public PersonResponseDto addPerson(PersonAddDto dto) {
         Person person = addMapper.getPerson(dto);
         if (personDao.getByLastName(person.getLastName()).isPresent()) {
-            throw new EntityExistsException();
+            throw new EntityAlreadyExistsException();
         }
         return responseMapper.getPersonDto(personDao.save(person));
     }

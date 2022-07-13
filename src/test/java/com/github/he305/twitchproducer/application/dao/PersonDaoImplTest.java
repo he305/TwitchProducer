@@ -2,6 +2,7 @@ package com.github.he305.twitchproducer.application.dao;
 
 import com.github.he305.twitchproducer.application.repositories.PersonRepository;
 import com.github.he305.twitchproducer.common.entities.Person;
+import com.github.he305.twitchproducer.common.exception.EntitySaveFailedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +44,7 @@ class PersonDaoImplTest {
     }
 
     @Test
-    void getPersonById_existing() {
+    void get_existing() {
         Long personId = 0L;
         Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new Person()));
         Optional<Person> actual = underTest.get(personId);
@@ -51,7 +52,7 @@ class PersonDaoImplTest {
     }
 
     @Test
-    void getPersonById_nonExistent() {
+    void get_nonExistent() {
         Long personId = 0L;
         Mockito.when(personRepository.findById(personId)).thenReturn(Optional.empty());
         Optional<Person> actual = underTest.get(personId);
@@ -59,14 +60,14 @@ class PersonDaoImplTest {
     }
 
     @Test
-    void savePerson_shouldThrow() {
+    void save_shouldThrow() {
         Mockito.when(personRepository.save(Mockito.any())).thenThrow(new DataAccessResourceFailureException("sad"));
         Person data = new Person();
-        assertThrows(DataAccessException.class, () -> underTest.save(data));
+        assertThrows(EntitySaveFailedException.class, () -> underTest.save(data));
     }
 
     @Test
-    void savePerson_success() {
+    void save_success() {
         Person person = new Person();
         Mockito.when(personRepository.save(Mockito.any())).thenReturn(person);
         Person data = new Person();
@@ -74,7 +75,7 @@ class PersonDaoImplTest {
     }
 
     @Test
-    void deletePerson_notFound() {
+    void delete_notFound() {
         Person data = new Person();
         doThrow(new DataAccessResourceFailureException("sad")).when(personRepository).delete(Mockito.any());
         assertThrows(DataAccessException.class, () ->
@@ -82,7 +83,7 @@ class PersonDaoImplTest {
     }
 
     @Test
-    void deletePerson_success() {
+    void delete_success() {
         doNothing().when(personRepository).delete(Mockito.any());
         assertDoesNotThrow(() -> underTest.delete(new Person()));
     }
