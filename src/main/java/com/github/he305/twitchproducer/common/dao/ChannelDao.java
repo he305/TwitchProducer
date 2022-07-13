@@ -5,6 +5,6 @@ import lombok.NonNull;
 
 import java.util.Optional;
 
-public interface ChannelDao extends Dao<Channel> {
+public interface ChannelDao extends Dao<Channel, Long> {
     Optional<Channel> getChannelByName(@NonNull String nickname);
 }

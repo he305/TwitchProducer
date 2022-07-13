@@ -5,8 +5,8 @@ import com.github.he305.twitchproducer.common.exception.EntitySaveFailedExceptio
 import java.util.List;
 import java.util.Optional;
 
-public interface Dao<T> {
-    Optional<T> get(Long id);
+public interface Dao<T, U> {
+    Optional<T> get(U id);
 
     List<T> getAll();
 
