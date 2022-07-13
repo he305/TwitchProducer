@@ -1,7 +1,8 @@
-package com.github.he305.twitchproducer.application.services;
+package com.github.he305.twitchproducer.application.dao;
 
 import com.github.he305.twitchproducer.application.repositories.ChannelRepository;
 import com.github.he305.twitchproducer.application.repositories.StreamRepository;
+import com.github.he305.twitchproducer.common.dao.StreamDao;
 import com.github.he305.twitchproducer.common.dto.StreamAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
 import com.github.he305.twitchproducer.common.entities.Channel;
@@ -9,7 +10,6 @@ import com.github.he305.twitchproducer.common.entities.Stream;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.mapper.StreamAddMapper;
 import com.github.he305.twitchproducer.common.mapper.StreamResponseMapper;
-import com.github.he305.twitchproducer.common.service.StreamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class StreamServiceImpl implements StreamService {
+public class StreamDaoImpl implements StreamDao {
     private final StreamRepository streamRepository;
     private final ChannelRepository channelRepository;
     private final StreamResponseMapper responseMapper;

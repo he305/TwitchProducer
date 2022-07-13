@@ -1,4 +1,4 @@
-package com.github.he305.twitchproducer.common.service;
+package com.github.he305.twitchproducer.common.dao;
 
 import com.github.he305.twitchproducer.common.dto.ChannelAddDto;
 import com.github.he305.twitchproducer.common.dto.ChannelResponseDto;
@@ -8,7 +8,7 @@ import lombok.NonNull;
 import java.util.List;
 import java.util.Optional;
 
-public interface ChannelService {
+public interface ChannelDao {
     List<ChannelResponseDto> getAllChannels();
 
     Optional<ChannelResponseDto> getChannelByName(@NonNull String nickname);

@@ -1,11 +1,11 @@
 package com.github.he305.twitchproducer.application.controllers;
 
 import com.github.he305.twitchproducer.application.dto.StreamDataList;
+import com.github.he305.twitchproducer.common.dao.StreamDataDao;
 import com.github.he305.twitchproducer.common.dto.StreamDataAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamDataResponseDto;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.exception.StreamHasEndedException;
-import com.github.he305.twitchproducer.common.service.StreamDataService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,13 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class StreamDataControllerTest {
 
     @Mock
-    private StreamDataService streamDataService;
+    private StreamDataDao streamDataDao;
 
     private StreamDataController underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new StreamDataController(streamDataService);
+        underTest = new StreamDataController(streamDataDao);
     }
 
     @Test
@@ -39,7 +39,7 @@ class StreamDataControllerTest {
                 new StreamDataResponseDto(),
                 new StreamDataResponseDto()
         );
-        Mockito.when(streamDataService.getStreamDataForStreamId(Mockito.anyLong())).thenReturn(data);
+        Mockito.when(streamDataDao.getStreamDataForStreamId(Mockito.anyLong())).thenReturn(data);
         StreamDataList actual = underTest.getAllStreamsForStreamId(0L);
         assertEquals(data.size(), actual.getStreamData().size());
     }
@@ -47,7 +47,7 @@ class StreamDataControllerTest {
     @Test
     void addStreamData_notFoundChannel() {
         StreamDataAddDto dto = new StreamDataAddDto();
-        Mockito.when(streamDataService.addStreamData(0L, dto)).thenThrow(EntityNotFoundException.class);
+        Mockito.when(streamDataDao.addStreamData(0L, dto)).thenThrow(EntityNotFoundException.class);
         ResponseEntity<StreamDataResponseDto> actual = underTest.addStreamData(0L, dto);
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
     }
@@ -55,7 +55,7 @@ class StreamDataControllerTest {
     @Test
     void addStreamData_streamHasEnded() {
         StreamDataAddDto dto = new StreamDataAddDto();
-        Mockito.when(streamDataService.addStreamData(0L, dto)).thenThrow(StreamHasEndedException.class);
+        Mockito.when(streamDataDao.addStreamData(0L, dto)).thenThrow(StreamHasEndedException.class);
         ResponseEntity<StreamDataResponseDto> actual = underTest.addStreamData(0L, dto);
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
     }
@@ -64,7 +64,7 @@ class StreamDataControllerTest {
     void addStreamData_valid() {
         StreamDataAddDto dto = new StreamDataAddDto();
         StreamDataResponseDto expected = new StreamDataResponseDto();
-        Mockito.when(streamDataService.addStreamData(0L, dto)).thenReturn(expected);
+        Mockito.when(streamDataDao.addStreamData(0L, dto)).thenReturn(expected);
         ResponseEntity<StreamDataResponseDto> actual = underTest.addStreamData(0L, dto);
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());

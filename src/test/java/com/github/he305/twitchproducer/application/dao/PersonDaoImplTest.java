@@ -1,4 +1,4 @@
-package com.github.he305.twitchproducer.application.services;
+package com.github.he305.twitchproducer.application.dao;
 
 import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.application.repositories.PersonRepository;
@@ -21,7 +21,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class PersonServiceImplTest {
+class PersonDaoImplTest {
 
     @Mock
     private PersonRepository personRepository;
@@ -30,11 +30,11 @@ class PersonServiceImplTest {
     @Mock
     private PersonAddMapper personAddMapper;
 
-    private PersonServiceImpl underTest;
+    private PersonDaoImpl underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new PersonServiceImpl(personRepository, personResponseMapper, personAddMapper);
+        underTest = new PersonDaoImpl(personRepository, personResponseMapper, personAddMapper);
     }
 
     @Test

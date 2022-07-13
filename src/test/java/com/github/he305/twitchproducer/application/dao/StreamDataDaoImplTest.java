@@ -1,4 +1,4 @@
-package com.github.he305.twitchproducer.application.services;
+package com.github.he305.twitchproducer.application.dao;
 
 import com.github.he305.twitchproducer.application.repositories.StreamDataRepository;
 import com.github.he305.twitchproducer.application.repositories.StreamRepository;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-class StreamDataServiceImplTest {
+class StreamDataDaoImplTest {
 
     @Mock
     private StreamDataRepository streamDataRepository;
@@ -36,11 +36,11 @@ class StreamDataServiceImplTest {
     @Mock
     private StreamDataResponseMapper responseMapper;
 
-    private StreamDataServiceImpl underTest;
+    private StreamDataDaoImpl underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new StreamDataServiceImpl(streamDataRepository, streamRepository, addMapper, responseMapper);
+        underTest = new StreamDataDaoImpl(streamDataRepository, streamRepository, addMapper, responseMapper);
     }
 
     @Test

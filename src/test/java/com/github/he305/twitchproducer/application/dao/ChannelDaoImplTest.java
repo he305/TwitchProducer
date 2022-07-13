@@ -1,4 +1,4 @@
-package com.github.he305.twitchproducer.application.services;
+package com.github.he305.twitchproducer.application.dao;
 
 import com.github.he305.twitchproducer.application.mapper.ChannelResponseMapper;
 import com.github.he305.twitchproducer.application.repositories.ChannelRepository;
@@ -26,7 +26,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class ChannelServiceImplTest {
+class ChannelDaoImplTest {
     @Mock
     private ChannelRepository channelRepository;
     @Mock
@@ -35,11 +35,11 @@ class ChannelServiceImplTest {
     private ChannelAddMapper channelAddMapper;
     @Mock
     private ChannelResponseMapper channelResponseMapper;
-    private ChannelServiceImpl underTest;
+    private ChannelDaoImpl underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new ChannelServiceImpl(channelRepository, personRepository, channelAddMapper, channelResponseMapper);
+        underTest = new ChannelDaoImpl(channelRepository, personRepository, channelAddMapper, channelResponseMapper);
     }
 
     @Test

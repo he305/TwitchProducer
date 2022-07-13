@@ -1,14 +1,14 @@
-package com.github.he305.twitchproducer.application.services;
+package com.github.he305.twitchproducer.application.dao;
 
 import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.application.repositories.PersonRepository;
+import com.github.he305.twitchproducer.common.dao.PersonDao;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
 import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.mapper.PersonAddMapper;
 import com.github.he305.twitchproducer.common.mapper.PersonResponseMapper;
-import com.github.he305.twitchproducer.common.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class PersonServiceImpl implements PersonService {
+public class PersonDaoImpl implements PersonDao {
 
     private final PersonRepository personRepository;
     private final PersonResponseMapper responseMapper;

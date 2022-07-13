@@ -1,4 +1,4 @@
-package com.github.he305.twitchproducer.application.services;
+package com.github.he305.twitchproducer.application.dao;
 
 import com.github.he305.twitchproducer.common.entities.StreamData;
 import com.github.twitch4j.helix.TwitchHelix;
@@ -18,7 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class StreamDataServiceHelixTest {
+class StreamDataDaoHelixTest {
 
     @Mock
     private TwitchHelix twitchClient;

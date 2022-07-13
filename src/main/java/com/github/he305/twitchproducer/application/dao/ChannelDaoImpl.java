@@ -1,8 +1,9 @@
-package com.github.he305.twitchproducer.application.services;
+package com.github.he305.twitchproducer.application.dao;
 
 import com.github.he305.twitchproducer.application.mapper.ChannelResponseMapper;
 import com.github.he305.twitchproducer.application.repositories.ChannelRepository;
 import com.github.he305.twitchproducer.application.repositories.PersonRepository;
+import com.github.he305.twitchproducer.common.dao.ChannelDao;
 import com.github.he305.twitchproducer.common.dto.ChannelAddDto;
 import com.github.he305.twitchproducer.common.dto.ChannelResponseDto;
 import com.github.he305.twitchproducer.common.entities.Channel;
@@ -10,7 +11,6 @@ import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityExistsException;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import com.github.he305.twitchproducer.common.mapper.ChannelAddMapper;
-import com.github.he305.twitchproducer.common.service.ChannelService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class ChannelServiceImpl implements ChannelService {
+public class ChannelDaoImpl implements ChannelDao {
     @Autowired
     private final ChannelRepository channelRepository;
 

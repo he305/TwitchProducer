@@ -2,10 +2,10 @@ package com.github.he305.twitchproducer.application.controllers;
 
 import com.github.he305.twitchproducer.application.dto.StreamEndRequest;
 import com.github.he305.twitchproducer.application.dto.StreamListDto;
+import com.github.he305.twitchproducer.common.dao.StreamDao;
 import com.github.he305.twitchproducer.common.dto.StreamAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
-import com.github.he305.twitchproducer.common.service.StreamService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,13 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class StreamControllerTest {
 
     @Mock
-    private StreamService streamService;
+    private StreamDao streamDao;
 
     private StreamController underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new StreamController(streamService);
+        underTest = new StreamController(streamDao);
     }
 
     @Test
@@ -42,7 +42,7 @@ class StreamControllerTest {
                 new StreamResponseDto()
         );
         StreamListDto expected = new StreamListDto(listData);
-        Mockito.when(streamService.getAllStreams()).thenReturn(listData);
+        Mockito.when(streamDao.getAllStreams()).thenReturn(listData);
 
         StreamListDto actual = underTest.getAllStreams();
         assertEquals(expected, actual);
@@ -56,7 +56,7 @@ class StreamControllerTest {
                 new StreamResponseDto()
         );
         StreamListDto expected = new StreamListDto(listData);
-        Mockito.when(streamService.getCurrentStreams()).thenReturn(listData);
+        Mockito.when(streamDao.getCurrentStreams()).thenReturn(listData);
 
         StreamListDto actual = underTest.getCurrentStreams();
         assertEquals(expected, actual);
@@ -64,7 +64,7 @@ class StreamControllerTest {
 
     @Test
     void getStreamById_notFound() {
-        Mockito.when(streamService.getStreamById(Mockito.anyLong())).thenReturn(Optional.empty());
+        Mockito.when(streamDao.getStreamById(Mockito.anyLong())).thenReturn(Optional.empty());
         ResponseEntity<StreamResponseDto> actual = underTest.getStreamById(0L);
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
     }
@@ -72,7 +72,7 @@ class StreamControllerTest {
     @Test
     void getStreamById_found() {
         StreamResponseDto expected = new StreamResponseDto();
-        Mockito.when(streamService.getStreamById(Mockito.anyLong())).thenReturn(Optional.of(expected));
+        Mockito.when(streamDao.getStreamById(Mockito.anyLong())).thenReturn(Optional.of(expected));
         ResponseEntity<StreamResponseDto> actual = underTest.getStreamById(0L);
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
@@ -81,7 +81,7 @@ class StreamControllerTest {
     @Test
     void addStream_channelNotFound() {
         StreamAddDto dto = new StreamAddDto();
-        Mockito.when(streamService.addStream(0L, dto)).thenThrow(EntityNotFoundException.class);
+        Mockito.when(streamDao.addStream(0L, dto)).thenThrow(EntityNotFoundException.class);
         ResponseEntity<StreamResponseDto> actual = underTest.addStream(0L, dto);
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
     }
@@ -90,7 +90,7 @@ class StreamControllerTest {
     void addStream_valid() {
         StreamAddDto dto = new StreamAddDto();
         StreamResponseDto expected = new StreamResponseDto();
-        Mockito.when(streamService.addStream(0L, dto)).thenReturn(expected);
+        Mockito.when(streamDao.addStream(0L, dto)).thenReturn(expected);
         ResponseEntity<StreamResponseDto> actual = underTest.addStream(0L, dto);
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
@@ -100,7 +100,7 @@ class StreamControllerTest {
     void endStream_notFound() {
         LocalDateTime time = LocalDateTime.now();
         StreamEndRequest req = new StreamEndRequest(time);
-        Mockito.when(streamService.endStream(0L, time)).thenThrow(EntityNotFoundException.class);
+        Mockito.when(streamDao.endStream(0L, time)).thenThrow(EntityNotFoundException.class);
         ResponseEntity<StreamResponseDto> actual = underTest.endStream(0L, req);
         assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
     }
@@ -110,7 +110,7 @@ class StreamControllerTest {
         LocalDateTime time = LocalDateTime.now();
         StreamEndRequest req = new StreamEndRequest(time);
         StreamResponseDto expected = new StreamResponseDto();
-        Mockito.when(streamService.endStream(0L, time)).thenReturn(expected);
+        Mockito.when(streamDao.endStream(0L, time)).thenReturn(expected);
         ResponseEntity<StreamResponseDto> actual = underTest.endStream(0L, req);
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());

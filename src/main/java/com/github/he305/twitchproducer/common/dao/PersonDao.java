@@ -1,4 +1,4 @@
-package com.github.he305.twitchproducer.common.service;
+package com.github.he305.twitchproducer.common.dao;
 
 import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
 import com.github.he305.twitchproducer.common.dto.PersonAddDto;
@@ -8,7 +8,7 @@ import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
-public interface PersonService {
+public interface PersonDao {
     List<PersonResponseDto> getAll();
 
     Optional<PersonResponseDto> getPersonById(Long personId);

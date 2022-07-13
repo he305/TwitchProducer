@@ -1,4 +1,4 @@
-package com.github.he305.twitchproducer.common.service;
+package com.github.he305.twitchproducer.common.dao;
 
 import com.github.he305.twitchproducer.common.dto.StreamAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface StreamService {
+public interface StreamDao {
     List<StreamResponseDto> getAllStreams();
 
     List<StreamResponseDto> getCurrentStreams();

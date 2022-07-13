@@ -1,4 +1,4 @@
-package com.github.he305.twitchproducer.application.services;
+package com.github.he305.twitchproducer.application.dao;
 
 import com.github.he305.twitchproducer.common.entities.StreamData;
 import com.github.he305.twitchproducer.common.interfaces.StreamDataService;
