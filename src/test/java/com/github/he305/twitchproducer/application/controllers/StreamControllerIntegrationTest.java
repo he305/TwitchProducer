@@ -245,6 +245,7 @@ class StreamControllerIntegrationTest {
                 time,
                 null,
                 0,
+                getChannelId(),
                 Collections.emptyList()
         );
 
@@ -278,6 +279,7 @@ class StreamControllerIntegrationTest {
                 time,
                 null,
                 0,
+                getChannelId(),
                 Collections.emptyList()
         );
 

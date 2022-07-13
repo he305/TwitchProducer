@@ -1,22 +1,19 @@
 package com.github.he305.twitchproducer.common.dao;
 
-import com.github.he305.twitchproducer.application.dto.PersonResponseDto;
-import com.github.he305.twitchproducer.common.dto.PersonAddDto;
-import com.github.he305.twitchproducer.common.exception.EntityExistsException;
+import com.github.he305.twitchproducer.common.entities.Person;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface PersonDao {
-    List<PersonResponseDto> getAll();
+    List<Person> getAll();
 
-    Optional<PersonResponseDto> getPersonById(Long personId);
+    Optional<Person> getPersonById(Long personId);
 
-    PersonResponseDto addPerson(PersonAddDto personResponseDto) throws EntityExistsException;
+    void deletePerson(Person person) throws EntityNotFoundException;
 
-    void deletePerson(Long personId) throws EntityNotFoundException;
+    Person savePerson(Person person);
 
-    PersonResponseDto updatePerson(Long personId, PersonAddDto personResponseDto) throws EntityNotFoundException;
-
+    Optional<Person> findByLastName(String lastName);
 }

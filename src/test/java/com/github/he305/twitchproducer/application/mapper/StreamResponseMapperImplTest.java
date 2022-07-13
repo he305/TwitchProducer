@@ -2,6 +2,7 @@ package com.github.he305.twitchproducer.application.mapper;
 
 import com.github.he305.twitchproducer.common.dto.StreamDataResponseDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
+import com.github.he305.twitchproducer.common.entities.Channel;
 import com.github.he305.twitchproducer.common.entities.Stream;
 import com.github.he305.twitchproducer.common.entities.StreamData;
 import com.github.he305.twitchproducer.common.mapper.StreamDataResponseMapper;
@@ -33,13 +34,16 @@ class StreamResponseMapperImplTest {
     @Test
     void toDto() {
         LocalDateTime time = LocalDateTime.now();
+        Long channelId = 2L;
+        Channel channel = new Channel();
+        channel.setId(channelId);
         Stream stream = new Stream(
                 0L,
                 time,
                 time,
                 322,
                 new ArrayList<>(),
-                null
+                channel
         );
         StreamData data = new StreamData(
                 999L,
@@ -65,6 +69,7 @@ class StreamResponseMapperImplTest {
                 time,
                 time,
                 322,
+                channelId,
                 List.of(expectedData)
         );
 

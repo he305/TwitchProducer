@@ -15,5 +15,6 @@ public class StreamResponseDto {
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
     private Integer maxViewers;
+    private Long channelId;
     private List<StreamDataResponseDto> streamData;
 }

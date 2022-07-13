@@ -27,6 +27,7 @@ public class StreamResponseMapperImpl implements StreamResponseMapper {
                 stream.getStartedAt(),
                 stream.getEndedAt(),
                 stream.getMaxViewers(),
+                stream.getChannel().getId(),
                 streamData
         );
     }
