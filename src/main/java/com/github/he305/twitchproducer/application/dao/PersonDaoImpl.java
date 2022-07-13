@@ -22,22 +22,22 @@ public class PersonDaoImpl implements PersonDao {
     }
 
     @Override
-    public Optional<Person> getPersonById(Long personId) {
+    public Optional<Person> get(Long personId) {
         return personRepository.findById(personId);
     }
 
     @Override
-    public void deletePerson(Person person) throws EntityNotFoundException {
+    public void delete(Person person) throws EntityNotFoundException {
         personRepository.delete(person);
     }
 
     @Override
-    public Person savePerson(Person person) {
+    public Person save(Person person) {
         return personRepository.save(person);
     }
 
     @Override
-    public Optional<Person> findByLastName(String lastName) {
+    public Optional<Person> getByLastName(String lastName) {
         return personRepository.findByLastName(lastName);
     }
 }

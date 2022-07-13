@@ -46,7 +46,7 @@ class PersonDaoImplTest {
     void getPersonById_existing() {
         Long personId = 0L;
         Mockito.when(personRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(new Person()));
-        Optional<Person> actual = underTest.getPersonById(personId);
+        Optional<Person> actual = underTest.get(personId);
         assertTrue(actual.isPresent());
     }
 
@@ -54,7 +54,7 @@ class PersonDaoImplTest {
     void getPersonById_nonExistent() {
         Long personId = 0L;
         Mockito.when(personRepository.findById(personId)).thenReturn(Optional.empty());
-        Optional<Person> actual = underTest.getPersonById(personId);
+        Optional<Person> actual = underTest.get(personId);
         assertTrue(actual.isEmpty());
     }
 
@@ -62,7 +62,7 @@ class PersonDaoImplTest {
     void savePerson_shouldThrow() {
         Mockito.when(personRepository.save(Mockito.any())).thenThrow(new DataAccessResourceFailureException("sad"));
         Person data = new Person();
-        assertThrows(DataAccessException.class, () -> underTest.savePerson(data));
+        assertThrows(DataAccessException.class, () -> underTest.save(data));
     }
 
     @Test
@@ -70,7 +70,7 @@ class PersonDaoImplTest {
         Person person = new Person();
         Mockito.when(personRepository.save(Mockito.any())).thenReturn(person);
         Person data = new Person();
-        assertDoesNotThrow(() -> underTest.savePerson(data));
+        assertDoesNotThrow(() -> underTest.save(data));
     }
 
     @Test
@@ -78,19 +78,19 @@ class PersonDaoImplTest {
         Person data = new Person();
         doThrow(new DataAccessResourceFailureException("sad")).when(personRepository).delete(Mockito.any());
         assertThrows(DataAccessException.class, () ->
-                underTest.deletePerson(data));
+                underTest.delete(data));
     }
 
     @Test
     void deletePerson_success() {
         doNothing().when(personRepository).delete(Mockito.any());
-        assertDoesNotThrow(() -> underTest.deletePerson(new Person()));
+        assertDoesNotThrow(() -> underTest.delete(new Person()));
     }
 
     @Test
     void findByLastName_notFound() {
         Mockito.when(personRepository.findByLastName(Mockito.any())).thenReturn(Optional.empty());
-        Optional<Person> actual = underTest.findByLastName("123");
+        Optional<Person> actual = underTest.getByLastName("123");
         assertTrue(actual.isEmpty());
     }
 
@@ -98,7 +98,7 @@ class PersonDaoImplTest {
     void findByLastName_found() {
         Person expected = new Person();
         Mockito.when(personRepository.findByLastName(Mockito.any())).thenReturn(Optional.of(expected));
-        Optional<Person> actual = underTest.findByLastName("123");
+        Optional<Person> actual = underTest.getByLastName("123");
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
     }

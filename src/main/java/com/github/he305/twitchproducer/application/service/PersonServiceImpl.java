@@ -31,7 +31,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Optional<PersonResponseDto> getPersonById(Long personId) {
-        Optional<Person> person = personDao.getPersonById(personId);
+        Optional<Person> person = personDao.get(personId);
         if (person.isEmpty()) {
             return Optional.empty();
         }
@@ -41,30 +41,30 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public PersonResponseDto addPerson(PersonAddDto dto) {
         Person person = addMapper.getPerson(dto);
-        if (personDao.findByLastName(person.getLastName()).isPresent()) {
+        if (personDao.getByLastName(person.getLastName()).isPresent()) {
             throw new EntityExistsException();
         }
-        return responseMapper.getPersonDto(personDao.savePerson(person));
+        return responseMapper.getPersonDto(personDao.save(person));
     }
 
     @Override
     public void deletePerson(Long personId) throws EntityNotFoundException {
-        Optional<Person> person = personDao.getPersonById(personId);
+        Optional<Person> person = personDao.get(personId);
         if (person.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        personDao.deletePerson(person.get());
+        personDao.delete(person.get());
     }
 
     @Override
     public PersonResponseDto updatePerson(Long personId, PersonAddDto dto) throws EntityNotFoundException {
-        Optional<Person> person = personDao.getPersonById(personId);
+        Optional<Person> person = personDao.get(personId);
         if (person.isEmpty())
             throw new EntityNotFoundException();
 
         Person personToUpdate = person.get();
         personToUpdate.setFirstName(dto.getFirstName());
         personToUpdate.setLastName(dto.getLastName());
-        return responseMapper.getPersonDto(personDao.savePerson(personToUpdate));
+        return responseMapper.getPersonDto(personDao.save(personToUpdate));
     }
 }
