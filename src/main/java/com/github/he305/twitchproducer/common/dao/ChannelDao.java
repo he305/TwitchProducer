@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface ChannelDao extends Dao<Channel, Long> {
     List<Channel> getChannelByName(@NonNull String nickname);
+
+    List<Channel> getLiveChannels();
+
+    Channel updateIsLive(Channel channel, boolean isLive);
 }

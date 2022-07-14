@@ -36,6 +36,11 @@ public class ChannelController {
         return new ResponseEntity<>(channel.get(), HttpStatus.OK);
     }
 
+    @GetMapping("/channel/live")
+    public ChannelListDto getLiveChannels() {
+        return new ChannelListDto(channelService.getLiveChannels());
+    }
+
     @DeleteMapping("/channel/{channelId}")
     public ResponseEntity<String> deleteChannel(@PathVariable Long channelId) {
         try {

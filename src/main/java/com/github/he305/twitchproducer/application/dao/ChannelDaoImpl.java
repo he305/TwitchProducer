@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -28,6 +29,17 @@ public class ChannelDaoImpl implements ChannelDao {
     @Override
     public List<Channel> getChannelByName(@NonNull String nickname) {
         return channelRepository.findByNickname(nickname);
+    }
+
+    @Override
+    public List<Channel> getLiveChannels() {
+        return channelRepository.findAll().stream().filter(Channel::getIsLive).collect(Collectors.toList());
+    }
+
+    @Override
+    public Channel updateIsLive(Channel channel, boolean isLive) {
+        channel.setIsLive(isLive);
+        return save(channel);
     }
 
     @Override

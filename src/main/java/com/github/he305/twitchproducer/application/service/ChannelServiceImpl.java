@@ -51,6 +51,11 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
+    public List<ChannelResponseDto> getLiveChannels() {
+        return channelDao.getLiveChannels().stream().map(channelResponseMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<ChannelResponseDto> getChannelById(@NonNull Long id) {
         Optional<Channel> channel = channelDao.get(id);
         if (channel.isEmpty())

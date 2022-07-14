@@ -13,6 +13,8 @@ public interface ChannelService {
 
     Optional<ChannelResponseDto> getChannelByName(@NonNull String nickname);
 
+    List<ChannelResponseDto> getLiveChannels();
+
     Optional<ChannelResponseDto> getPersonChannelByName(@NonNull Long personId, @NonNull String channelName);
 
     Optional<ChannelResponseDto> getChannelById(@NonNull Long id);
