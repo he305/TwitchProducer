@@ -1,5 +1,6 @@
 package com.github.he305.twitchproducer.application.service;
 
+import com.github.he305.twitchproducer.application.dto.StreamEndRequest;
 import com.github.he305.twitchproducer.common.dao.ChannelDao;
 import com.github.he305.twitchproducer.common.dao.StreamDao;
 import com.github.he305.twitchproducer.common.dao.StreamDataDao;
@@ -115,7 +116,59 @@ class StreamServiceImplTest {
     }
 
     @Test
-    void endStream() {
+    void endStream_channelNotFound() {
+        StreamEndRequest req = new StreamEndRequest();
+        Mockito.when(channelDao.get(Mockito.anyLong())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () ->
+                underTest.endStream(0L, req));
+    }
+
+    @Test
+    void endStream_nullChannelId() {
+        Long id = null;
+        StreamEndRequest req = new StreamEndRequest();
+        assertThrows(NullPointerException.class, () ->
+                underTest.endStream(id, req));
+    }
+
+    @Test
+    void endStream_nullStreamEndRequest() {
+        Long id = 0L;
+        StreamEndRequest req = null;
+        assertThrows(NullPointerException.class, () ->
+                underTest.endStream(id, req));
+    }
+
+    @Test
+    void endStream_noCurrentStream() {
+        Channel channel = new Channel();
+        StreamEndRequest req = new StreamEndRequest();
+        Channel updatedChannel = new Channel();
+
+        Mockito.when(channelDao.get(Mockito.anyLong())).thenReturn(Optional.of(channel));
+        Mockito.when(channelDao.updateIsLive(channel, false)).thenReturn(updatedChannel);
+        Mockito.when(streamDao.getCurrentStreamForChannel(updatedChannel)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () ->
+                underTest.endStream(0L, req));
+    }
+
+    @Test
+    void endStream_valid() {
+        StreamEndRequest req = new StreamEndRequest(LocalDateTime.now());
+        Channel updatedChannel = new Channel();
+        LocalDateTime startTime = LocalDateTime.now();
+        Stream currentStream = new Stream(0L, startTime, null, 0, null, updatedChannel);
+        Stream updatedStream = new Stream(0L, startTime, req.getTime(), 0, null, updatedChannel);
+        StreamResponseDto expected = new StreamResponseDto(0L, startTime, req.getTime(), 0, 0L, null);
+
+        Mockito.when(channelDao.get(Mockito.anyLong())).thenReturn(Optional.of(new Channel()));
+        Mockito.when(channelDao.updateIsLive(updatedChannel, false)).thenReturn(updatedChannel);
+        Mockito.when(streamDao.getCurrentStreamForChannel(updatedChannel)).thenReturn(Optional.of(currentStream));
+        Mockito.when(streamDao.save(updatedStream)).thenReturn(updatedStream);
+        Mockito.when(responseMapper.toDto(updatedStream)).thenReturn(expected);
+
+        StreamResponseDto actual = underTest.endStream(0L, req);
+        assertEquals(expected, actual);
     }
 
     @Test

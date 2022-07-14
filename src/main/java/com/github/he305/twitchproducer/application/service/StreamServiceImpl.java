@@ -72,7 +72,7 @@ public class StreamServiceImpl implements StreamService {
     }
 
     @Override
-    public StreamResponseDto endStream(@NonNull Long channelId, StreamEndRequest req) {
+    public StreamResponseDto endStream(@NonNull Long channelId, @NonNull StreamEndRequest req) {
         Optional<Channel> channel = channelDao.get(channelId);
         if (channel.isEmpty()) {
             throw new EntityNotFoundException();
