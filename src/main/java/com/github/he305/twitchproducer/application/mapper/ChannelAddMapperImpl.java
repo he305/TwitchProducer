@@ -15,6 +15,7 @@ public class ChannelAddMapperImpl implements ChannelAddMapper {
                 null,
                 dto.getNickname(),
                 dto.getPlatform(),
+                false,
                 null,
                 Collections.emptyList()
         );

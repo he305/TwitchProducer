@@ -108,6 +108,7 @@ public class ChannelServiceImpl implements ChannelService {
         Channel channelToUpdate = existingChannel.get();
         channelToUpdate.setNickname(dto.getNickname());
         channelToUpdate.setPlatform(dto.getPlatform());
+        channelToUpdate.setIsLive(false);
         Channel saved = channelDao.save(channelToUpdate);
         return channelResponseMapper.toDto(saved);
     }

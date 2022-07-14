@@ -24,6 +24,9 @@ public class Channel extends AuditModel {
     @Column(name = "platform", length = 8, nullable = false)
     private Platform platform;
 
+    @Column(name = "is_live", nullable = false)
+    private Boolean isLive;
+
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "person_id", referencedColumnName = "id", nullable = false)
     private Person person;

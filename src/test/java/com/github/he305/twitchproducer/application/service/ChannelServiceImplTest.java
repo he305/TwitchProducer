@@ -130,8 +130,8 @@ class ChannelServiceImplTest {
         Long notExistingPersonId = 2L;
         String existingNickname = "test";
         List<Channel> existingChannels = List.of(
-                new Channel(0L, existingNickname, Platform.TWITCH, new Person(0L, "test", "test", Collections.emptyList()), Collections.emptyList()),
-                new Channel(1L, existingNickname, Platform.TWITCH, new Person(1L, "test", "test", Collections.emptyList()), Collections.emptyList())
+                new Channel(0L, existingNickname, Platform.TWITCH, false, new Person(0L, "test", "test", Collections.emptyList()), Collections.emptyList()),
+                new Channel(1L, existingNickname, Platform.TWITCH, false, new Person(1L, "test", "test", Collections.emptyList()), Collections.emptyList())
         );
         Mockito.when(channelDao.getChannelByName(Mockito.any())).thenReturn(existingChannels);
         Optional<ChannelResponseDto> expected = Optional.empty();
@@ -144,8 +144,8 @@ class ChannelServiceImplTest {
         Long existingPersonId = 1L;
         String existingNickname = "test";
         List<Channel> existingChannels = List.of(
-                new Channel(0L, existingNickname, Platform.TWITCH, new Person(1L, "test", "test", Collections.emptyList()), Collections.emptyList()),
-                new Channel(1L, existingNickname, Platform.TWITCH, new Person(2L, "test1", "test2", Collections.emptyList()), Collections.emptyList())
+                new Channel(0L, existingNickname, Platform.TWITCH, false, new Person(1L, "test", "test", Collections.emptyList()), Collections.emptyList()),
+                new Channel(1L, existingNickname, Platform.TWITCH, false, new Person(2L, "test1", "test2", Collections.emptyList()), Collections.emptyList())
         );
         Mockito.when(channelDao.getChannelByName(Mockito.any())).thenReturn(existingChannels);
         ChannelResponseDto expected = new ChannelResponseDto(0L, existingNickname, Platform.TWITCH, "");
@@ -180,7 +180,7 @@ class ChannelServiceImplTest {
     void addChannel_alreadyExistsName() {
         Person existingPerson = new Person(0L, "", "", Collections.emptyList());
         Mockito.when(personDao.get(Mockito.anyLong())).thenReturn(Optional.of(existingPerson));
-        Channel existingChannel = new Channel(0L, "", Platform.TWITCH, existingPerson, Collections.emptyList());
+        Channel existingChannel = new Channel(0L, "", Platform.TWITCH, false, existingPerson, Collections.emptyList());
         Mockito.when(channelDao.getChannelByName(Mockito.any())).thenReturn(List.of(existingChannel));
         Mockito.when(channelResponseMapper.toDto(Mockito.any())).thenReturn(new ChannelResponseDto());
 
@@ -245,6 +245,7 @@ class ChannelServiceImplTest {
                 0L,
                 "old",
                 Platform.TWITCH,
+                false,
                 null,
                 null
         );
@@ -252,6 +253,7 @@ class ChannelServiceImplTest {
                 0L,
                 "new",
                 Platform.GOODGAME,
+                false,
                 null,
                 null
         );

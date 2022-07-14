@@ -1,0 +1,2 @@
+ALTER TABLE channel
+ADD COLUMN is_live BOOLEAN NOT NULL;
