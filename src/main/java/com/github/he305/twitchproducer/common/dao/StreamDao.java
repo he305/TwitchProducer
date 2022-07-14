@@ -1,20 +1,13 @@
 package com.github.he305.twitchproducer.common.dao;
 
-import com.github.he305.twitchproducer.common.dto.StreamAddDto;
-import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
+import com.github.he305.twitchproducer.common.entities.Channel;
+import com.github.he305.twitchproducer.common.entities.Stream;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface StreamDao {
-    List<StreamResponseDto> getAllStreams();
+public interface StreamDao extends Dao<Stream, Long> {
+    List<Stream> getCurrentStreams();
 
-    List<StreamResponseDto> getCurrentStreams();
-
-    StreamResponseDto addStream(Long channelId, StreamAddDto dto);
-
-    Optional<StreamResponseDto> getStreamById(Long id);
-
-    StreamResponseDto endStream(Long streamId, LocalDateTime endTime);
+    Optional<Stream> getCurrentStreamForChannel(Channel channel);
 }
