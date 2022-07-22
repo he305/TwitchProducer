@@ -6,10 +6,7 @@ import com.github.he305.twitchproducer.application.dto.StreamEndRequest;
 import com.github.he305.twitchproducer.application.dto.StreamListDto;
 import com.github.he305.twitchproducer.common.dao.ChannelDao;
 import com.github.he305.twitchproducer.common.dao.StreamDao;
-import com.github.he305.twitchproducer.common.dto.ChannelAddDto;
-import com.github.he305.twitchproducer.common.dto.PersonAddDto;
-import com.github.he305.twitchproducer.common.dto.StreamDataAddDto;
-import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
+import com.github.he305.twitchproducer.common.dto.*;
 import com.github.he305.twitchproducer.common.entities.Channel;
 import com.github.he305.twitchproducer.common.entities.Platform;
 import com.github.he305.twitchproducer.common.entities.Stream;
@@ -110,6 +107,8 @@ class StreamControllerIntegrationTest {
                 new Stream(null, now.minusHours(1), now, 0, new ArrayList<>(), channel),
                 new Stream(null, now.minusHours(2), null, 0, new ArrayList<>(), channel)
         );
+
+        channel.setIsLive(true);
 
         return streams
                 .stream()
@@ -264,8 +263,12 @@ class StreamControllerIntegrationTest {
                 onlineStream.getStartedAt(),
                 null,
                 0,
-                getChannelId()
+                channelId
         );
+
+        List<ChannelResponseDto> liveChannels = channelController.getLiveChannels().getChannels();
+        assertEquals(1, liveChannels.size());
+        assertEquals(channelId, liveChannels.get(0).getId());
 
         MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/channel/%d/streamData", channelId))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -278,6 +281,10 @@ class StreamControllerIntegrationTest {
         StreamResponseDto actual = mapper.readValue(content, StreamResponseDto.class);
         expected.setId(actual.getId());
         assertEquals(expected, actual);
+
+        liveChannels = channelController.getLiveChannels().getChannels();
+        assertEquals(1, liveChannels.size());
+        assertEquals(channelId, liveChannels.get(0).getId());
     }
 
     @Test
@@ -303,6 +310,8 @@ class StreamControllerIntegrationTest {
                 getChannelId()
         );
 
+        List<ChannelResponseDto> liveChannels = channelController.getLiveChannels().getChannels();
+        assertTrue(liveChannels.isEmpty());
         MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/channel/%d/streamData", channelId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
@@ -314,6 +323,9 @@ class StreamControllerIntegrationTest {
         StreamResponseDto actual = mapper.readValue(content, StreamResponseDto.class);
         expected.setId(actual.getId());
         assertEquals(expected, actual);
+        liveChannels = channelController.getLiveChannels().getChannels();
+        assertEquals(1, liveChannels.size());
+        assertEquals(channelId, liveChannels.get(0).getId());
     }
 
     @Test
@@ -358,6 +370,9 @@ class StreamControllerIntegrationTest {
                 getChannelId()
         );
 
+        List<ChannelResponseDto> liveChannels = channelController.getLiveChannels().getChannels();
+        assertEquals(1, liveChannels.size());
+        assertEquals(channelId, liveChannels.get(0).getId());
         MvcResult result = mockMvc.perform(put(ApiVersionPathConstants.V1 + String.format("/channel/%d/end", channelId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonObject))
@@ -370,12 +385,14 @@ class StreamControllerIntegrationTest {
         assertNotNull(actual.getEndedAt());
         expected.setId(actual.getId());
         assertEquals(expected, actual);
+        liveChannels = channelController.getLiveChannels().getChannels();
+        assertTrue(liveChannels.isEmpty());
     }
 
     @Test
     @Transactional
     @SneakyThrows
-    void endStream_noLiveStream_valid() {
+    void endStream_noLiveStream() {
         injectChannel();
         LocalDateTime endTime = LocalDateTime.now().plusHours(1);
         StreamEndRequest endRequest = new StreamEndRequest(
