@@ -137,4 +137,23 @@ class ChannelDaoImplTest {
         assertThrows(NullPointerException.class, () ->
                 underTest.delete(data));
     }
+
+    @Test
+    void getLiveChannels_someData() {
+        Channel liveChannel = new Channel();
+        liveChannel.setIsLive(true);
+        Channel placeholder = new Channel();
+        placeholder.setIsLive(false);
+
+        List<Channel> existedData = List.of(
+                placeholder,
+                placeholder,
+                liveChannel
+        );
+
+        Mockito.when(channelRepository.findAll()).thenReturn(existedData);
+        List<Channel> actual = underTest.getLiveChannels();
+        assertEquals(1, actual.size());
+        assertEquals(liveChannel, actual.get(0));
+    }
 }

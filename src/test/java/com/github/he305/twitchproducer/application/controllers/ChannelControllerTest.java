@@ -159,4 +159,14 @@ class ChannelControllerTest {
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }
+
+    @Test
+    void getLiveChannels() {
+        ChannelResponseDto expected = new ChannelResponseDto();
+        Mockito.when(channelService.getLiveChannels()).thenReturn(List.of(expected));
+
+        List<ChannelResponseDto> actual = underTest.getLiveChannels().getChannels();
+        assertEquals(1, actual.size());
+        assertEquals(expected, actual.get(0));
+    }
 }

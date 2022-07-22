@@ -270,4 +270,17 @@ class ChannelServiceImplTest {
         ChannelResponseDto actual = underTest.updateChannel(0L, dto);
         assertEquals(actual, expected);
     }
+
+    @Test
+    void getLiveChannels() {
+        Channel channel = new Channel();
+        ChannelResponseDto expected = new ChannelResponseDto();
+
+        Mockito.when(channelDao.getLiveChannels()).thenReturn(List.of(channel));
+        Mockito.when(channelResponseMapper.toDto(channel)).thenReturn(expected);
+
+        List<ChannelResponseDto> actual = underTest.getLiveChannels();
+        assertEquals(1, actual.size());
+        assertEquals(expected, actual.get(0));
+    }
 }
