@@ -4,7 +4,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,9 +29,9 @@ public class Stream extends AuditModel {
 
     @OneToMany(targetEntity = StreamData.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "stream_id")
-    private List<StreamData> streamData = new ArrayList<>();
+    private List<StreamData> streamData;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "channel_id", referencedColumnName = "id", nullable = false)
     private Channel channel;
 
