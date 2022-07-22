@@ -1,6 +1,7 @@
 package com.github.he305.twitchproducer.application.mapper;
 
 import com.github.he305.twitchproducer.common.dto.StreamDataResponseDto;
+import com.github.he305.twitchproducer.common.entities.Stream;
 import com.github.he305.twitchproducer.common.entities.StreamData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,12 +29,16 @@ class StreamDataResponseMapperImplTest {
                 12
         );
 
+        Stream stream = new Stream();
+        Long streamId = 90L;
+        stream.setId(streamId);
+
         StreamData data = new StreamData(
                 999L,
                 "some game",
                 "some title",
                 322,
-                null,
+                stream,
                 time
         );
         data.setCreatedAt(time);
@@ -43,7 +48,8 @@ class StreamDataResponseMapperImplTest {
                 "some game",
                 "some title",
                 322,
-                time
+                time,
+                streamId
         );
 
         StreamDataResponseDto actual = underTest.toDto(data);
@@ -52,12 +58,16 @@ class StreamDataResponseMapperImplTest {
 
     @Test
     void toDto_noDate() {
+        Stream stream = new Stream();
+        Long streamId = 90L;
+        stream.setId(streamId);
+
         StreamData data = new StreamData(
                 999L,
                 "some game",
                 "some title",
                 322,
-                null,
+                stream,
                 null
         );
 
@@ -66,7 +76,8 @@ class StreamDataResponseMapperImplTest {
                 "some game",
                 "some title",
                 322,
-                null
+                null,
+                streamId
         );
 
         StreamDataResponseDto actual = underTest.toDto(data);

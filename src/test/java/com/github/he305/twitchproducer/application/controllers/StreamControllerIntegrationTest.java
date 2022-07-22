@@ -2,6 +2,7 @@ package com.github.he305.twitchproducer.application.controllers;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.github.he305.twitchproducer.application.constants.ApiVersionPathConstants;
+import com.github.he305.twitchproducer.application.dto.StreamEndRequest;
 import com.github.he305.twitchproducer.application.dto.StreamListDto;
 import com.github.he305.twitchproducer.common.dao.ChannelDao;
 import com.github.he305.twitchproducer.common.dao.StreamDao;
@@ -35,10 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -70,8 +69,6 @@ class StreamControllerIntegrationTest {
     private ChannelController channelController;
     @Autowired
     private PersonController personController;
-    @Autowired
-    private StreamDataController streamDataController;
     @Autowired
     private StreamResponseMapper streamResponseMapper;
 
@@ -246,157 +243,174 @@ class StreamControllerIntegrationTest {
                 .andReturn();
     }
 
-//    @Test
-//    @Transactional
-//    @SneakyThrows
-//    void addStream_valid() {
-//        injectChannel();
-//        LocalDateTime time = LocalDateTime.now();
-//        StreamDataAddDto dto = new StreamDataAddDto(
-//                "test",
-//                "title",
-//                0,
-//                time
-//        );
-//        String jsonObject = mapper.writeValueAsString(dto);
-//        Long channelId = getChannelId();
-//
-//        StreamResponseDto expected = new StreamResponseDto(
-//                null,
-//                time,
-//                null,
-//                0,
-//                getChannelId(),
-//                Collections.emptyList()
-//        );
-//
-//        MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/channel/%d/streamData", channelId))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonObject))
-//                .andDo(print())
-//                .andExpect(status().is2xxSuccessful())
-//                .andReturn();
-//
-//        String content = result.getResponse().getContentAsString();
-//        StreamResponseDto actual = mapper.readValue(content, StreamResponseDto.class);
-//        expected.setId(actual.getId());
-//        assertEquals(expected.getStartedAt(), actual.getStartedAt());
-//        assertEquals(expected.getEndedAt(), actual.getEndedAt());
-//        assertEquals(dto.getViewerCount(), actual.getMaxViewers());
-//        List<StreamDataResponseDto> actualStreamData = actual.getStreamData();
-//        // TODO: use streamDataDao
-//        List<StreamDataResponseDto> addedData = streamDataController.getAllStreamsForStreamId(actual.getId()).getStreamData();
-//        assertEquals(1, addedData.size());
-//        assertEquals(1, actualStreamData.size());
-//    }
-//
-//    @Test
-//    @Transactional
-//    @SneakyThrows
-//    void addStream_validWithData() {
-//        injectStream();
-//        LocalDateTime time = LocalDateTime.now();
-//        StreamAddDto dto = new StreamAddDto(
-//                time
-//        );
-//        String jsonObject = mapper.writeValueAsString(dto);
-//        Long channelId = getChannelId();
-//
-//        StreamResponseDto expected = new StreamResponseDto(
-//                null,
-//                time,
-//                null,
-//                0,
-//                getChannelId(),
-//                Collections.emptyList()
-//        );
-//
-//        MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/channel/%d/stream", channelId))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonObject))
-//                .andDo(print())
-//                .andExpect(status().is2xxSuccessful())
-//                .andReturn();
-//
-//        String content = result.getResponse().getContentAsString();
-//        StreamResponseDto actual = mapper.readValue(content, StreamResponseDto.class);
-//        expected.setId(actual.getId());
-//        assertEquals(expected, actual);
-//    }
-//
-//    @Test
-//    @Transactional
-//    @SneakyThrows
-//    void endStream_notFound() {
-//        StreamEndRequest req = new StreamEndRequest(
-//                LocalDateTime.now()
-//        );
-//
-//        String jsonObject = mapper.writeValueAsString(req);
-//        mockMvc.perform(put(ApiVersionPathConstants.V1 + String.format("/stream/%d/end", 9999L))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonObject))
-//                .andDo(print())
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    @Transactional
-//    @SneakyThrows
-//    void endStream_endExistingStream() {
-//        List<StreamResponseDto> streams = injectStream();
-//        StreamResponseDto expected = streams.get(0);
-//        assertNull(expected.getEndedAt());
-//
-//        StreamEndRequest req = new StreamEndRequest(
-//                LocalDateTime.now()
-//        );
-//
-//        String jsonObject = mapper.writeValueAsString(req);
-//        MvcResult result = mockMvc.perform(put(ApiVersionPathConstants.V1 + String.format("/stream/%d/end", expected.getId()))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonObject))
-//                .andDo(print())
-//                .andExpect(status().is2xxSuccessful())
-//                .andReturn();
-//
-//        String content = result.getResponse().getContentAsString();
-//        StreamResponseDto actual = mapper.readValue(content, StreamResponseDto.class);
-//        expected.setEndedAt(actual.getEndedAt());
-//        assertEquals(expected, actual);
-//    }
-//
-//    @Test
-//    @Transactional
-//    @SneakyThrows
-//    void endStream_addStreamAndEndIt() {
-//        injectChannel();
-//        Long channelId = getChannelId();
-//        StreamAddDto addDto = new StreamAddDto(
-//                LocalDateTime.now()
-//        );
-//        StreamResponseDto expected = underTest.addStream(channelId, addDto).getBody();
-//        assertNotNull(expected);
-//        assertNull(expected.getEndedAt());
-//
-//        StreamEndRequest req = new StreamEndRequest(
-//                LocalDateTime.now()
-//        );
-//
-//        String jsonObject = mapper.writeValueAsString(req);
-//        MvcResult result = mockMvc.perform(put(ApiVersionPathConstants.V1 + String.format("/stream/%d/end", expected.getId()))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonObject))
-//                .andDo(print())
-//                .andExpect(status().is2xxSuccessful())
-//                .andReturn();
-//
-//        String content = result.getResponse().getContentAsString();
-//        StreamResponseDto actual = mapper.readValue(content, StreamResponseDto.class);
-//        expected.setEndedAt(actual.getEndedAt());
-//        assertEquals(expected, actual);
-//    }
+    @Test
+    @Transactional
+    @SneakyThrows
+    void addStream_existingStream_valid() {
+        List<Stream> injectedStreams = injectStream();
+        Stream onlineStream = injectedStreams.stream().filter(stream -> stream.getEndedAt() == null).findFirst().get();
+        LocalDateTime time = LocalDateTime.now();
+        StreamDataAddDto dto = new StreamDataAddDto(
+                "test",
+                "title",
+                0,
+                time
+        );
+        String jsonObject = mapper.writeValueAsString(dto);
+        Long channelId = getChannelId();
 
+        StreamResponseDto expected = new StreamResponseDto(
+                onlineStream.getId(),
+                onlineStream.getStartedAt(),
+                null,
+                0,
+                getChannelId()
+        );
+
+        MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/channel/%d/streamData", channelId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        StreamResponseDto actual = mapper.readValue(content, StreamResponseDto.class);
+        expected.setId(actual.getId());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void addStream_newStream_valid() {
+        injectChannel();
+        LocalDateTime time = LocalDateTime.now();
+        StreamDataAddDto dto = new StreamDataAddDto(
+                "test",
+                "title",
+                0,
+                time
+        );
+        String jsonObject = mapper.writeValueAsString(dto);
+        Long channelId = getChannelId();
+
+        StreamResponseDto expected = new StreamResponseDto(
+                null,
+                time,
+                null,
+                0,
+                getChannelId()
+        );
+
+        MvcResult result = mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/channel/%d/streamData", channelId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        StreamResponseDto actual = mapper.readValue(content, StreamResponseDto.class);
+        expected.setId(actual.getId());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void addStream_noChannel() {
+        LocalDateTime time = LocalDateTime.now();
+        StreamDataAddDto dto = new StreamDataAddDto(
+                "test",
+                "title",
+                0,
+                time
+        );
+        String jsonObject = mapper.writeValueAsString(dto);
+        Long emptyChannelId = 99999L;
+
+        mockMvc.perform(post(ApiVersionPathConstants.V1 + String.format("/channel/%d/streamData", emptyChannelId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void endStream_existingStream_valid() {
+        List<Stream> injectedStreams = injectStream();
+        Stream onlineStream = injectedStreams.stream().filter(stream -> stream.getEndedAt() == null).findFirst().get();
+        LocalDateTime endTime = LocalDateTime.now().plusHours(1);
+        StreamEndRequest endRequest = new StreamEndRequest(
+                endTime
+        );
+        String jsonObject = mapper.writeValueAsString(endRequest);
+        Long channelId = getChannelId();
+
+        StreamResponseDto expected = new StreamResponseDto(
+                onlineStream.getId(),
+                onlineStream.getStartedAt(),
+                endTime,
+                0,
+                getChannelId()
+        );
+
+        MvcResult result = mockMvc.perform(put(ApiVersionPathConstants.V1 + String.format("/channel/%d/end", channelId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        StreamResponseDto actual = mapper.readValue(content, StreamResponseDto.class);
+        assertNotNull(actual.getEndedAt());
+        expected.setId(actual.getId());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void endStream_noLiveStream_valid() {
+        injectChannel();
+        LocalDateTime endTime = LocalDateTime.now().plusHours(1);
+        StreamEndRequest endRequest = new StreamEndRequest(
+                endTime
+        );
+        String jsonObject = mapper.writeValueAsString(endRequest);
+        Long channelId = getChannelId();
+
+        mockMvc.perform(put(ApiVersionPathConstants.V1 + String.format("/channel/%d/end", channelId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    @SneakyThrows
+    void endStream_noChannel() {
+        LocalDateTime time = LocalDateTime.now();
+        StreamDataAddDto dto = new StreamDataAddDto(
+                "test",
+                "title",
+                0,
+                time
+        );
+        String jsonObject = mapper.writeValueAsString(dto);
+        Long emptyChannelId = 99999L;
+
+        mockMvc.perform(put(ApiVersionPathConstants.V1 + String.format("/channel/%d/end", emptyChannelId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonObject))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {

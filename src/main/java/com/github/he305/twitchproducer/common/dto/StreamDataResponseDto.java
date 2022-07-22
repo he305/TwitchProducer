@@ -15,4 +15,5 @@ public class StreamDataResponseDto {
     private String title;
     private Integer viewerCount;
     private LocalDateTime currentTime;
+    private Long streamId;
 }

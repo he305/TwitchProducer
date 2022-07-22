@@ -8,29 +8,35 @@ import com.github.he305.twitchproducer.common.dto.StreamDataAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
 import com.github.he305.twitchproducer.common.entities.Channel;
 import com.github.he305.twitchproducer.common.entities.Stream;
+import com.github.he305.twitchproducer.common.entities.StreamData;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
+import com.github.he305.twitchproducer.common.mapper.StreamDataAddMapper;
 import com.github.he305.twitchproducer.common.mapper.StreamResponseMapper;
 import com.github.he305.twitchproducer.common.service.StreamService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StreamServiceImpl implements StreamService {
     private final StreamDao streamDao;
     private final StreamDataDao streamDataDao;
     private final ChannelDao channelDao;
 
     private final StreamResponseMapper responseMapper;
+    private final StreamDataAddMapper streamDataAddMapper;
+
 
     @Override
-    public StreamResponseDto addStreamData(Long channelId, StreamDataAddDto dto) {
+    public StreamResponseDto addStreamData(@NonNull Long channelId, StreamDataAddDto dto) {
         Optional<Channel> channel = channelDao.get(channelId);
         if (channel.isEmpty())
             throw new EntityNotFoundException();
@@ -40,14 +46,22 @@ public class StreamServiceImpl implements StreamService {
 
         if (currentStream.isEmpty()) {
             Stream newStream = createNewStream(dto, savedChannel);
-            streamDataDao.addStreamData(newStream.getId(), dto);
+            StreamData streamData = createNewStreamData(newStream, dto);
+            streamDataDao.save(streamData);
             return getStreamResponseDtoOrThrow(newStream.getId());
         }
 
         Stream stream = currentStream.get();
-        streamDataDao.addStreamData(stream.getId(), dto);
+        StreamData streamData = createNewStreamData(stream, dto);
+        streamDataDao.save(streamData);
         updateViewerCount(stream, dto);
         return getStreamResponseDtoOrThrow(stream.getId());
+    }
+
+    private StreamData createNewStreamData(Stream stream, StreamDataAddDto dto) {
+        StreamData streamData = streamDataAddMapper.toStreamData(dto);
+        streamData.setStream(stream);
+        return streamData;
     }
 
     private StreamResponseDto getStreamResponseDtoOrThrow(Long streamId) {
@@ -67,7 +81,7 @@ public class StreamServiceImpl implements StreamService {
     }
 
     private Stream createNewStream(StreamDataAddDto dto, Channel savedChannel) {
-        Stream stream = new Stream(null, dto.getTime(), null, dto.getViewerCount(), new ArrayList<>(), savedChannel);
+        Stream stream = new Stream(null, dto.getTime(), null, dto.getViewerCount(), Collections.emptyList(), savedChannel);
         return streamDao.save(stream);
     }
 

@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,5 +15,4 @@ public class StreamResponseDto {
     private LocalDateTime endedAt;
     private Integer maxViewers;
     private Long channelId;
-    private List<StreamDataResponseDto> streamData;
 }

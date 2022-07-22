@@ -6,11 +6,9 @@ import com.github.he305.twitchproducer.common.dao.StreamDao;
 import com.github.he305.twitchproducer.common.dao.StreamDataDao;
 import com.github.he305.twitchproducer.common.dto.StreamDataAddDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
-import com.github.he305.twitchproducer.common.entities.Channel;
-import com.github.he305.twitchproducer.common.entities.Person;
-import com.github.he305.twitchproducer.common.entities.Platform;
-import com.github.he305.twitchproducer.common.entities.Stream;
+import com.github.he305.twitchproducer.common.entities.*;
 import com.github.he305.twitchproducer.common.exception.EntityNotFoundException;
+import com.github.he305.twitchproducer.common.mapper.StreamDataAddMapper;
 import com.github.he305.twitchproducer.common.mapper.StreamResponseMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,12 +35,14 @@ class StreamServiceImplTest {
     private ChannelDao channelDao;
     @Mock
     private StreamResponseMapper responseMapper;
+    @Mock
+    private StreamDataAddMapper streamDataAddMapper;
 
     private StreamServiceImpl underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new StreamServiceImpl(streamDao, streamDataDao, channelDao, responseMapper);
+        underTest = new StreamServiceImpl(streamDao, streamDataDao, channelDao, responseMapper, streamDataAddMapper);
     }
 
     @Test
@@ -62,6 +62,7 @@ class StreamServiceImplTest {
         Channel existedChannel = new Channel(0L, "test", Platform.TWITCH, false, new Person(), List.of());
         Channel savedChannel = new Channel(0L, "test", Platform.TWITCH, true, new Person(), new ArrayList<>());
         Stream newStream = new Stream(1L, time, null, 0, new ArrayList<>(), savedChannel);
+        StreamData streamData = new StreamData(1L, dto.getGameName(), dto.getTitle(), dto.getViewerCount(), newStream, time);
         StreamResponseDto expected = new StreamResponseDto();
 
         Mockito.when(channelDao.get(Mockito.anyLong())).thenReturn(Optional.of(existedChannel));
@@ -69,6 +70,8 @@ class StreamServiceImplTest {
         Mockito.when(streamDao.getCurrentStreamForChannel(savedChannel)).thenReturn(Optional.empty());
         Mockito.when(streamDao.save(Mockito.any())).thenReturn(newStream);
         Mockito.when(streamDao.get(newStream.getId())).thenReturn(Optional.of(newStream));
+        Mockito.when(streamDataAddMapper.toStreamData(dto)).thenReturn(streamData);
+        Mockito.when(streamDataDao.save(streamData)).thenReturn(streamData);
         Mockito.when(responseMapper.toDto(newStream)).thenReturn(expected);
 
         StreamResponseDto actual = underTest.addStreamData(0L, dto);
@@ -82,12 +85,15 @@ class StreamServiceImplTest {
         Channel existedChannel = new Channel(0L, "test", Platform.TWITCH, false, new Person(), List.of());
         Channel savedChannel = new Channel(0L, "test", Platform.TWITCH, true, new Person(), new ArrayList<>());
         Stream existedStream = new Stream(1L, time, null, 0, new ArrayList<>(), savedChannel);
+        StreamData streamData = new StreamData(1L, dto.getGameName(), dto.getTitle(), dto.getViewerCount(), existedStream, time);
         StreamResponseDto expected = new StreamResponseDto();
 
         Mockito.when(channelDao.get(Mockito.anyLong())).thenReturn(Optional.of(existedChannel));
         Mockito.when(channelDao.updateIsLive(existedChannel, true)).thenReturn(savedChannel);
         Mockito.when(streamDao.getCurrentStreamForChannel(savedChannel)).thenReturn(Optional.of(existedStream));
         Mockito.when(streamDao.get(existedStream.getId())).thenReturn(Optional.of(existedStream));
+        Mockito.when(streamDataAddMapper.toStreamData(dto)).thenReturn(streamData);
+        Mockito.when(streamDataDao.save(streamData)).thenReturn(streamData);
         Mockito.when(responseMapper.toDto(existedStream)).thenReturn(expected);
 
         StreamResponseDto actual = underTest.addStreamData(0L, dto);
@@ -102,6 +108,7 @@ class StreamServiceImplTest {
         Channel savedChannel = new Channel(0L, "test", Platform.TWITCH, true, new Person(), new ArrayList<>());
         Stream existedStream = new Stream(1L, time, null, 0, null, savedChannel);
         Stream updatedStream = new Stream(1L, time, null, 1, null, savedChannel);
+        StreamData streamData = new StreamData(1L, dto.getGameName(), dto.getTitle(), dto.getViewerCount(), existedStream, time);
         StreamResponseDto expected = new StreamResponseDto();
 
         Mockito.when(channelDao.get(Mockito.anyLong())).thenReturn(Optional.of(existedChannel));
@@ -109,6 +116,8 @@ class StreamServiceImplTest {
         Mockito.when(streamDao.getCurrentStreamForChannel(savedChannel)).thenReturn(Optional.of(existedStream));
         Mockito.when(streamDao.get(existedStream.getId())).thenReturn(Optional.of(existedStream));
         Mockito.when(streamDao.save(existedStream)).thenReturn(updatedStream);
+        Mockito.when(streamDataAddMapper.toStreamData(dto)).thenReturn(streamData);
+        Mockito.when(streamDataDao.save(streamData)).thenReturn(streamData);
         Mockito.when(responseMapper.toDto(updatedStream)).thenReturn(expected);
 
         StreamResponseDto actual = underTest.addStreamData(0L, dto);
@@ -159,7 +168,7 @@ class StreamServiceImplTest {
         LocalDateTime startTime = LocalDateTime.now();
         Stream currentStream = new Stream(0L, startTime, null, 0, null, updatedChannel);
         Stream updatedStream = new Stream(0L, startTime, req.getTime(), 0, null, updatedChannel);
-        StreamResponseDto expected = new StreamResponseDto(0L, startTime, req.getTime(), 0, 0L, null);
+        StreamResponseDto expected = new StreamResponseDto(0L, startTime, req.getTime(), 0, 0L);
 
         Mockito.when(channelDao.get(Mockito.anyLong())).thenReturn(Optional.of(new Channel()));
         Mockito.when(channelDao.updateIsLive(updatedChannel, false)).thenReturn(updatedChannel);

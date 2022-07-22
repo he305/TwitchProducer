@@ -1,12 +1,9 @@
 package com.github.he305.twitchproducer.common.dao;
 
-import com.github.he305.twitchproducer.common.dto.StreamDataAddDto;
-import com.github.he305.twitchproducer.common.dto.StreamDataResponseDto;
+import com.github.he305.twitchproducer.common.entities.StreamData;
 
-import java.util.List;
-
-public interface StreamDataDao {
-    StreamDataResponseDto addStreamData(Long streamId, StreamDataAddDto streamData);
-
-    List<StreamDataResponseDto> getStreamDataForStreamId(Long id);
+public interface StreamDataDao extends Dao<StreamData, Long> {
+//    StreamDataResponseDto addStreamData(Long streamId, StreamDataAddDto streamData);
+//
+//    List<StreamDataResponseDto> getStreamDataForStreamId(Long id);
 }

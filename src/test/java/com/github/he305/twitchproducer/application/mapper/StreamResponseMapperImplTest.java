@@ -1,21 +1,17 @@
 package com.github.he305.twitchproducer.application.mapper;
 
-import com.github.he305.twitchproducer.common.dto.StreamDataResponseDto;
 import com.github.he305.twitchproducer.common.dto.StreamResponseDto;
 import com.github.he305.twitchproducer.common.entities.Channel;
 import com.github.he305.twitchproducer.common.entities.Stream;
-import com.github.he305.twitchproducer.common.entities.StreamData;
 import com.github.he305.twitchproducer.common.mapper.StreamDataResponseMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -45,32 +41,13 @@ class StreamResponseMapperImplTest {
                 new ArrayList<>(),
                 channel
         );
-        StreamData data = new StreamData(
-                999L,
-                "some",
-                "title",
-                322,
-                stream,
-                time
-        );
-        stream.addStreamData(data);
-
-        StreamDataResponseDto expectedData = new StreamDataResponseDto(
-                999L,
-                "some",
-                "title",
-                322,
-                time
-        );
-        Mockito.when(dataMapper.toDto(Mockito.any())).thenReturn(expectedData);
 
         StreamResponseDto expected = new StreamResponseDto(
                 0L,
                 time,
                 time,
                 322,
-                channelId,
-                List.of(expectedData)
+                channelId
         );
 
         StreamResponseDto actual = underTest.toDto(stream);
